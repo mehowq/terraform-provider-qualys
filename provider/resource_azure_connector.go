@@ -34,6 +34,7 @@ func resourceAzureConnector() *schema.Resource {
 			"authentication_key": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				Sensitive: true,
 			},
 			"is_gov_cloud": &schema.Schema{
 				Type:     schema.TypeBool,

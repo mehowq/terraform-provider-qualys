@@ -28,6 +28,7 @@ func Provider() terraform.ResourceProvider {
 			"password": {
 				Type:        schema.TypeString,
 				Required:    true,
+				Sensitive:	 true,
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
