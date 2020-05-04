@@ -1,4 +1,4 @@
-# qualys-connector
+# qualys-provider
 
 go build -o terraform-provider-qualys
 

@@ -47,6 +47,8 @@ func (c *Client) httpRequest(path, method string, body bytes.Buffer) (closer io.
 	case "GET":
 	case "DELETE":
 		req.Header.Add("Content-Type", "application/json")
+	case "PUT":
+		req.Header.Add("Content-Type", "application/json")
 	default:
 		req.Header.Add("Content-Type", "application/json")
 	}
@@ -107,7 +109,7 @@ func (c *Client) UpdateAzureConnector(connector *AzureConnector) error {
 	if err != nil {
 		return err
 	}
-	_, err = c.httpRequest(fmt.Sprintf("/azure/connectors/%s", connector.Name), "PUT", buf)
+	_, err = c.httpRequest(fmt.Sprintf("/azure/connectors/%s", connector.ConnectorId), "PUT", buf)
 	if err != nil {
 		return err
 	}

@@ -119,6 +119,7 @@ func resourceAzureConnectorUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	connector := client.AzureConnector{
+		ConnectorId:		d.Id(),
 		Name:        		d.Get("name").(string),
 		Description: 		d.Get("description").(string),
 		DirectoryId:		d.Get("directory_id").(string),
