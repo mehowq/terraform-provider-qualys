@@ -107,7 +107,8 @@ func resourceAzureConnectorRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("directory_id", connector.DirectoryId)
 	d.Set("subscription_id", connector.SubscriptionId)
 	d.Set("application_id", connector.ApplicationId)
-	d.Set("authentication_key", connector.AuthenticationKey)
+	//The API doesn't return the auth key (security)
+	//d.Set("authentication_key", connector.AuthenticationKey)
 	d.Set("is_gov_cloud", connector.IsGovCloud)
 	d.Set("last_synced_on", connector.LastSyncedOn)
 	d.Set("total_assets", connector.TotalAssets)
@@ -124,6 +125,7 @@ func resourceAzureConnectorUpdate(d *schema.ResourceData, m interface{}) error {
 		Description: 		d.Get("description").(string),
 		DirectoryId:		d.Get("directory_id").(string),
 		SubscriptionId:		d.Get("subscription_id").(string),
+		//Since Read returns an empty auth key, TF thinks it needs to update it
 		ApplicationId: 		d.Get("application_id").(string),
 		AuthenticationKey: 	d.Get("authentication_key").(string),
 		IsGovCloud:			d.Get("is_gov_cloud").(bool),
