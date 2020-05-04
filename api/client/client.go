@@ -57,13 +57,18 @@ func (c *Client) httpRequest(path, method string, body bytes.Buffer) (closer io.
 		return nil, err
 	}
 
-	if (resp.StatusCode != http.StatusOK) && (resp.StatusCode != http.StatusCreated) && (resp.StatusCode != http.StatusNoContent) {
-		respBody := new(bytes.Buffer)
-		_, err := respBody.ReadFrom(resp.Body)
-		if err != nil {
-			return nil, fmt.Errorf("got an unexpected status code: %v", resp.StatusCode)
-		}
-		return nil, fmt.Errorf("got an unexpected status code: %v - %s", resp.StatusCode, respBody.String())
+	switch resp.StatusCode {
+		case
+			http.StatusOK,
+			http.StatusCreated,
+			http.StatusNoContent:
+		default:
+			respBody := new(bytes.Buffer)
+			_, err := respBody.ReadFrom(resp.Body)
+			if err != nil {
+				return nil, fmt.Errorf("got an unexpected status code: %v", resp.StatusCode)
+			}
+			return nil, fmt.Errorf("got an unexpected status code: %v - %s", resp.StatusCode, respBody.String())	
 	}
 	return resp.Body, nil
 }
