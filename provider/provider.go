@@ -24,11 +24,13 @@ func Provider() terraform.ResourceProvider {
 			"username": {
 				Type:        schema.TypeString,
 				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("QUALYS_API_USERNAME", ""),
 			},
 			"password": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Sensitive:	 true,
+				DefaultFunc: schema.EnvDefaultFunc("QUALYS_API_PASSWORD", ""),
 			},
 		},
 		DataSourcesMap: map[string]*schema.Resource{

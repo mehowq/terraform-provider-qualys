@@ -5,6 +5,11 @@ go build -o terraform-provider-qualys
 https://www.qualys.com/docs/qualys-cloudview-api-user-guide.pdf
 https://qualysguard.qualys.eu/cloudview-api/swagger-ui.html#!/
 
+Can use env vars: QUALYS_API_USERNAME and QUALYS_API_PASSWORD
+instead of passing them in directly to provider
+
+Many features of the CloudView are available through REST APIs. Access support information at www.qualys.com/support. Permissions: User must have the CloudView module enabled and api access permission.
+
 provider "qualys" {
     platform = "https://qualysguard.qualys.eu"
     api = "/cloudview-api/rest/v1"
