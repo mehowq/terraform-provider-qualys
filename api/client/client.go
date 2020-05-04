@@ -19,8 +19,7 @@ type Client struct {
 	httpClient *http.Client
 }
 
-// NewClient returns a new client configured to communicate on a server with the
-// given hostname and port and to send an Authorization Header
+// NewClient returns a new client configured to communicate with API
 func NewClient(hostname string, port int, api string, username string, password string) *Client {
 	return &Client{
 		hostname:   hostname,
