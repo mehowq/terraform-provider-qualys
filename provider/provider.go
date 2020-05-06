@@ -12,14 +12,17 @@ func Provider() terraform.ResourceProvider {
 			"platform": {
 				Type:        schema.TypeString,
 				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("QUALYS_API_PLATFORM", ""),
 			},
 			"api": {
 				Type:        schema.TypeString,
 				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("QUALYS_API", ""),
 			},
 			"port": {
 				Type:        schema.TypeInt,
 				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("QUALYS_API_PORT", ""),
 			},
 			"username": {
 				Type:        schema.TypeString,
