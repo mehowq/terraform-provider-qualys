@@ -32,7 +32,7 @@ func NewClient(hostname string, port int, api string, username string, password 
 }
 
 func (c *Client) requestPath(path string) string {
-	return fmt.Sprintf("%s:%v%s%s", c.hostname, c.port, c.api, path)
+	return fmt.Sprintf("%s:%v/%s%s", c.hostname, c.port, c.api, path)
 }
 
 func (c *Client) httpRequest(path, method string, body bytes.Buffer) (closer io.ReadCloser, err error) {
