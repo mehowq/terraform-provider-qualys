@@ -2,6 +2,8 @@
 
 go build -o terraform-provider-qualys
 
+TF_ACC=true
+
 https://www.qualys.com/docs/qualys-cloudview-api-user-guide.pdf
 https://qualysguard.qualys.eu/cloudview-api/swagger-ui.html#!/
 
@@ -43,3 +45,45 @@ output "azConnectorTotalAssets" {
 output "azConnectorState" {
     value = "${qualys_azure_connector.az_connector.state}"
 }
+
+
+resource "qualys_aws_connector" "aws_connector" {
+    name = ""
+    description = ""
+    arn = ""
+    external_id = ""
+    is_gov_cloud = false
+    is_china_region = false
+    is_portal_connector = false
+}
+
+# output "awsConnectorName" {
+#     value = "${qualys_aws_connector.aws_connector.name}"
+# }
+# output "awsConnectorAccountId" {
+#     value = "${qualys_aws_connector.aws_connector.aws_account_id}"
+# }
+# output "awsConnectorArn" {
+#     value = "${qualys_aws_connector.aws_connector.arn}"
+# }
+# output "awsConnectorExternalId" {
+#     value = "${qualys_aws_connector.aws_connector.external_id}"
+# }
+# output "awsConnectorIsGovCloud" {
+#     value = "${qualys_aws_connector.aws_connector.is_gov_cloud}"
+# }
+# output "awsConnectorIsChinaRegion" {
+#     value = "${qualys_aws_connector.aws_connector.is_china_region}"
+# }
+# output "awsConnectorIsPortalConnector" {
+#     value = "${qualys_aws_connector.aws_connector.is_portal_connector}"
+# }
+# output "awsConnectorLastSyncedOn" {
+#     value = "${qualys_aws_connector.aws_connector.last_synced_on}"
+# }
+# output "awsConnectorTotalAssets" {
+#     value = "${qualys_aws_connector.aws_connector.total_assets}"
+# }
+# output "awsConnectorState" {
+#     value = "${qualys_aws_connector.aws_connector.state}"
+# }
