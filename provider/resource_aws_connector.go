@@ -8,7 +8,7 @@ import (
 	"github.com/mehowq/terraform-provider-qualys/api/client"
 )
 
-func resourceAzureConnector() *schema.Resource {
+func resourceAWSConnector() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
@@ -19,24 +19,27 @@ func resourceAzureConnector() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"directory_id": &schema.Schema{
+			"aws_account_id": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"arn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"subscription_id": &schema.Schema{
+			"external_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-			},
-			"application_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"authentication_key": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				Sensitive: true,
 			},
 			"is_gov_cloud": &schema.Schema{
+				Type:     schema.TypeBool,
+				Required: true,
+			},
+			"is_china_region": &schema.Schema{
+				Type:     schema.TypeBool,
+				Required: true,
+			},
+			"is_portal_connector": &schema.Schema{
 				Type:     schema.TypeBool,
 				Required: true,
 			},
@@ -53,49 +56,50 @@ func resourceAzureConnector() *schema.Resource {
 				Computed: true,
 			},
 		},
-		Create: resourceAzureConnectorCreate,
-		Read:   resourceAzureConnectorRead,
-		Update: resourceAzureConnectorUpdate,
-		Delete: resourceAzureConnectorDelete,
-		Exists: resourceAzureConnectorExists,
+		Create: resourceAWSConnectorCreate,
+		Read:   resourceAWSConnectorRead,
+		Update: resourceAWSConnectorUpdate,
+		Delete: resourceAWSConnectorDelete,
+		Exists: resourceAWSConnectorExists,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
 	}
 }
 
-func resourceAzureConnectorCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAWSConnectorCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	connector := client.AzureConnector{
+	connector := client.AWSConnector{
 		Name:        		d.Get("name").(string),
 		Description: 		d.Get("description").(string),
-		DirectoryId:		d.Get("directory_id").(string),
-		SubscriptionId:		d.Get("subscription_id").(string),
-		ApplicationId: 		d.Get("application_id").(string),
-		AuthenticationKey: 	d.Get("authentication_key").(string),
+		ARN:				d.Get("arn").(string),
+		ExternalId: 		d.Get("external_id").(string),
 		IsGovCloud:			d.Get("is_gov_cloud").(bool),
+		IsChinaRegion:		d.Get("is_china_region").(bool),
+		IsPortalConnector:	d.Get("is_portal_connector").(bool),
 	}
 
-	//TODO Add some validation to check if subscription_id is not already in use
+	//TODO Add some validation to check if account_id is not already in use
 
-	newConnector, err := apiClient.NewAzureConnector(&connector)
+	newConnector, err := apiClient.NewAWSConnector(&connector)
 
 	if err != nil {
 		return err
 	}
 	d.SetId(newConnector.ConnectorId)
+	d.Set("aws_account_id", newConnector.AWSAccountId)
 	d.Set("last_synced_on", newConnector.LastSyncedOn)
 	d.Set("total_assets", newConnector.TotalAssets)
 	d.Set("state", newConnector.State)
 	return nil
 }
 
-func resourceAzureConnectorRead(d *schema.ResourceData, m interface{}) error {
+func resourceAWSConnectorRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	connectorId := d.Id()
-	connector, err := apiClient.GetAzureConnector(connectorId)
+	connector, err := apiClient.GetAWSConnector(connectorId)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
 			d.SetId("")
@@ -107,46 +111,46 @@ func resourceAzureConnectorRead(d *schema.ResourceData, m interface{}) error {
 	d.SetId(connector.ConnectorId)
 	d.Set("name", connector.Name)
 	d.Set("description", connector.Description)
-	d.Set("directory_id", connector.DirectoryId)
-	d.Set("subscription_id", connector.SubscriptionId)
-	d.Set("application_id", connector.ApplicationId)
-	//The API doesn't return the auth key (security)
-	//d.Set("authentication_key", connector.AuthenticationKey)
+	d.Set("aws_account_id", connector.AWSAccountId)
+	d.Set("arn", connector.ARN)
+	d.Set("external_id", connector.ExternalId)
 	d.Set("is_gov_cloud", connector.IsGovCloud)
+	d.Set("is_china_region", connector.IsChinaRegion)
+	d.Set("is_portal_connector", connector.IsPortalConnector)
 	d.Set("last_synced_on", connector.LastSyncedOn)
 	d.Set("total_assets", connector.TotalAssets)
 	d.Set("state", connector.State)
 	return nil
 }
 
-func resourceAzureConnectorUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAWSConnectorUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	connector := client.AzureConnector{
+	connector := client.AWSConnector{
 		ConnectorId:		d.Id(),
 		Name:        		d.Get("name").(string),
 		Description: 		d.Get("description").(string),
-		DirectoryId:		d.Get("directory_id").(string),
-		SubscriptionId:		d.Get("subscription_id").(string),
-		//Since Read returns an empty auth key, TF thinks it needs to update it
-		ApplicationId: 		d.Get("application_id").(string),
-		AuthenticationKey: 	d.Get("authentication_key").(string),
+		AWSAccountId:		d.Get("aws_account_id").(string),
+		ARN:				d.Get("arn").(string),
+		ExternalId:			d.Get("external_id").(string),
 		IsGovCloud:			d.Get("is_gov_cloud").(bool),
+		IsChinaRegion:		d.Get("is_china_region").(bool),
+		IsPortalConnector:	d.Get("is_portal_connector").(bool),
 	}
 
-	err := apiClient.UpdateAzureConnector(&connector)
+	err := apiClient.UpdateAWSConnector(&connector)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func resourceAzureConnectorDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAWSConnectorDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	connectorId := d.Id()
 
-	err := apiClient.DeleteAzureConnector(connectorId)
+	err := apiClient.DeleteAWSConnector(connectorId)
 	if err != nil {
 		return err
 	}
@@ -154,11 +158,11 @@ func resourceAzureConnectorDelete(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAzureConnectorExists(d *schema.ResourceData, m interface{}) (bool, error) {
+func resourceAWSConnectorExists(d *schema.ResourceData, m interface{}) (bool, error) {
 	apiClient := m.(*client.Client)
 
 	connectorId := d.Id()
-	_, err := apiClient.GetAzureConnector(connectorId)
+	_, err := apiClient.GetAWSConnector(connectorId)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
 			return false, nil

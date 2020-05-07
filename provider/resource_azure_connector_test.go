@@ -10,9 +10,9 @@ import (
 	guuid "github.com/google/uuid"
 )
 
-var testAccAzConnResType = "qualys_azure_connector"
-var testAccAzConnResName = "connector_az_acctest"
-var testAccAzConnResName2 = "connector_az_acctest2"
+const testAccAzConnResType = "qualys_azure_connector"
+const testAccAzConnResName = "connector_az_acctest"
+const testAccAzConnResName2 = "connector_az_acctest2"
 var testAccAzConnName = fmt.Sprintf("TF_AccTest_AzConn_%s", guuid.New().String())
 var testAccAzConnDirId = guuid.New().String()
 var testAccAzConnSubId = guuid.New().String()

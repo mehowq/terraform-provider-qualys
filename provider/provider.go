@@ -38,10 +38,12 @@ func Provider() terraform.ResourceProvider {
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"qualys_azure_connector": dataSourceAzureConnector(),
+			"qualys_aws_connector": dataSourceAWSConnector(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			//Terraform gets confused and downloads azure provider if we name it simply azure_connector
 			"qualys_azure_connector": resourceAzureConnector(),
+			"qualys_aws_connector": resourceAWSConnector(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
