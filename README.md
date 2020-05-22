@@ -14,7 +14,7 @@ Many features of the CloudView are available through REST APIs. Access support i
 
 provider "qualys" {
     platform = "https://qualysguard.qualys.eu"
-    api = "/cloudview-api/rest/v1"
+    api = "cloudview-api/rest/v1"
     port = 443
     username = "myApiUserName"
     password = "myApiPassword"
