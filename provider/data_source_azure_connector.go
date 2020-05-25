@@ -13,7 +13,7 @@ func dataSourceAzureConnector() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"connector_id": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -52,20 +52,41 @@ func dataSourceAzureConnector() *schema.Resource {
 				Computed: true,
 			},
 		},
-		Read:   dataSourceAzureConnectorRead,
+		Read: dataSourceAzureConnectorRead,
 	}
 }
 
 func dataSourceAzureConnectorRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
+	subscriptionId := d.Get("subscription_id").(string)
 	connectorId := d.Get("connector_id").(string)
-	connector, err := apiClient.GetAzureConnector(connectorId)
-	if err != nil {
-		if strings.Contains(err.Error(), "not found") {
-			d.SetId("")
-		} else {
-			return fmt.Errorf("error finding Connector with ID %s", connectorId)
+
+	var connector *client.AzureConnector
+	if subscriptionId != "" {
+		allConnectors, err := apiClient.GetAllAzureConnectors(0, 99999)
+		if err != nil {
+			return err
+		}
+
+		for _, n := range *allConnectors {
+			if n.SubscriptionId == subscriptionId {
+				connector = &n
+				break
+			}
+		}
+		if connector == nil {
+			return fmt.Errorf("Azure connector with subscription_id %s doesn't exist", subscriptionId)
+		}
+	} else {
+		var err error
+		connector, err = apiClient.GetAzureConnector(connectorId)
+		if err != nil {
+			if strings.Contains(err.Error(), "not found") {
+				d.SetId("")
+			} else {
+				return fmt.Errorf("error finding Connector with ID %s", connectorId)
+			}
 		}
 	}
 
