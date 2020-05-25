@@ -22,6 +22,13 @@ The code contains basic acceptance tests that you can run:
 TF_ACC=true go test -v provider/*
 ```
 
+## Debugging
+Use `log.Print()` and set environment variables:
+```
+export TF_LOG=1
+export TF_LOG_PATH="C:\Temp\mylog.txt"
+```
+
 ## Environment variables
 
 To run the tests or prevent storing the senstive information please use the following environment variables:
@@ -67,8 +74,11 @@ provider "qualys" {
   password = "<the API password>"
 }
 
-data "qualys_azure_connector" "ds_example" {
+data "qualys_azure_connector" "ds_by_id_example" {
      connector_id = "<Qualys Cloud Connector ID>"
+}
+data "qualys_azure_connector" "ds_by_subid_example" {
+     subscription_id = "<Subscription ID>"
 }
 ```
 
