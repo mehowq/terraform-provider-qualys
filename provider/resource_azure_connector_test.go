@@ -1,24 +1,27 @@
 package provider
 
 import (
-	"testing"
 	"fmt"
 	"regexp"
+	"testing"
+
+	guuid "github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	"github.com/mehowq/terraform-provider-qualys/api/client"
-	guuid "github.com/google/uuid"
 )
 
 const testAccAzConnResType = "qualys_azure_connector"
 const testAccAzConnResName = "connector_az_acctest"
 const testAccAzConnResName2 = "connector_az_acctest2"
+
 var testAccAzConnName = fmt.Sprintf("TF_AccTest_AzConn_%s", guuid.New().String())
 var testAccAzConnDirId = guuid.New().String()
 var testAccAzConnSubId = guuid.New().String()
 var testAccAzConnAppId = guuid.New().String()
 var testAccAzConnNamePostUpd = fmt.Sprintf("TF_AccTest_AzConn_%s", guuid.New().String())
 var testAccAzConnDirIdPostUpd = guuid.New().String()
+var testAccAzConnSubIdPostUpd = guuid.New().String()
 var testAccAzConnAppIdPostUpd = guuid.New().String()
 
 func TestAccAzConnector_Basic(t *testing.T) {
@@ -39,7 +42,7 @@ func TestAccAzConnector_Basic(t *testing.T) {
 						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "subscription_id", testAccAzConnSubId),
 					resource.TestCheckResourceAttr(
 						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "application_id", testAccAzConnAppId),
-					),
+				),
 			},
 		},
 	})
@@ -61,7 +64,9 @@ func TestAccAzConnector_Update(t *testing.T) {
 						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "directory_id", testAccAzConnDirId),
 					resource.TestCheckResourceAttr(
 						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "application_id", testAccAzConnAppId),
-					),
+					resource.TestCheckResourceAttr(
+						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "subscription_id", testAccAzConnSubId),
+				),
 			},
 			{
 				Config: testAccCheckAzConnectorUpdatePost(),
@@ -73,7 +78,9 @@ func TestAccAzConnector_Update(t *testing.T) {
 						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "directory_id", testAccAzConnDirIdPostUpd),
 					resource.TestCheckResourceAttr(
 						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "application_id", testAccAzConnAppIdPostUpd),
-					),
+					resource.TestCheckResourceAttr(
+						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "subscription_id", testAccAzConnSubIdPostUpd),
+				),
 			},
 		},
 	})
@@ -96,7 +103,45 @@ func TestAccAzConnector_Multiple(t *testing.T) {
 	})
 }
 
-func testAccCheckAzConnectorBasic() string {	
+func TestAccAzConnector_UpdateExistingSub(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAzConnectorDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAzConnectorUpdatePre(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAzConnectorExists(fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName)),
+					resource.TestCheckResourceAttr(
+						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "name", testAccAzConnName),
+					resource.TestCheckResourceAttr(
+						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "directory_id", testAccAzConnDirId),
+					resource.TestCheckResourceAttr(
+						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "application_id", testAccAzConnAppId),
+					resource.TestCheckResourceAttr(
+						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "subscription_id", testAccAzConnSubId),
+				),
+			},
+			{
+				Config: testAccCheckAzConnectorUpdatePost(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAzConnectorExists(fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName)),
+					resource.TestCheckResourceAttr(
+						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "name", testAccAzConnNamePostUpd),
+					resource.TestCheckResourceAttr(
+						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "directory_id", testAccAzConnDirIdPostUpd),
+					resource.TestCheckResourceAttr(
+						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "application_id", testAccAzConnAppIdPostUpd),
+					resource.TestCheckResourceAttr(
+						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "subscription_id", testAccAzConnSubIdPostUpd),
+				),
+			},
+		},
+	})
+}
+
+func testAccCheckAzConnectorBasic() string {
 	authKey := guuid.New().String()
 
 	return (fmt.Sprintf(`
@@ -110,13 +155,13 @@ resource "%s" "%s" {
 	is_gov_cloud = false
 }
 	`,
-	testAccAzConnResType,
-	testAccAzConnResName,
-	testAccAzConnName,
-	testAccAzConnDirId,
-	testAccAzConnSubId,
-	testAccAzConnAppId,
-	authKey))
+		testAccAzConnResType,
+		testAccAzConnResName,
+		testAccAzConnName,
+		testAccAzConnDirId,
+		testAccAzConnSubId,
+		testAccAzConnAppId,
+		authKey))
 }
 
 func testAccCheckAzConnectorExists(resource string) resource.TestCheckFunc {
@@ -161,7 +206,7 @@ func testAccCheckAzConnectorDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAzConnectorUpdatePre() string {	
+func testAccCheckAzConnectorUpdatePre() string {
 	authKey := guuid.New().String()
 
 	return (fmt.Sprintf(`
@@ -175,16 +220,16 @@ resource "%s" "%s" {
 	is_gov_cloud = false
 }
 	`,
-	testAccAzConnResType,
-	testAccAzConnResName,
-	testAccAzConnName,
-	testAccAzConnDirId,
-	testAccAzConnSubId,
-	testAccAzConnAppId,
-	authKey))
+		testAccAzConnResType,
+		testAccAzConnResName,
+		testAccAzConnName,
+		testAccAzConnDirId,
+		testAccAzConnSubId,
+		testAccAzConnAppId,
+		authKey))
 }
 
-func testAccCheckAzConnectorUpdatePost() string {	
+func testAccCheckAzConnectorUpdatePost() string {
 	authKey := guuid.New().String()
 
 	return (fmt.Sprintf(`
@@ -198,16 +243,16 @@ resource "%s" "%s" {
 	is_gov_cloud = false
 }
 	`,
-	testAccAzConnResType,
-	testAccAzConnResName,
-	testAccAzConnNamePostUpd,
-	testAccAzConnDirIdPostUpd,
-	testAccAzConnSubId,
-	testAccAzConnAppIdPostUpd,
-	authKey))
+		testAccAzConnResType,
+		testAccAzConnResName,
+		testAccAzConnNamePostUpd,
+		testAccAzConnDirIdPostUpd,
+		testAccAzConnSubIdPostUpd,
+		testAccAzConnAppIdPostUpd,
+		authKey))
 }
 
-func testAccCheckAzConnectorMultiple() string {	
+func testAccCheckAzConnectorMultiple() string {
 	authKey := guuid.New().String()
 	conn2name := fmt.Sprintf("TF_AccTest_AzConn2_%s", guuid.New().String())
 	conn2subId := guuid.New().String()
@@ -233,18 +278,18 @@ resource "%s" "%s" {
 	is_gov_cloud = false
 }
 	`,
-	testAccAzConnResType,
-	testAccAzConnResName,
-	testAccAzConnName,
-	testAccAzConnDirId,
-	testAccAzConnSubId,
-	testAccAzConnAppId,
-	authKey,
-	testAccAzConnResType,
-	testAccAzConnResName2,
-	conn2name,
-	testAccAzConnDirId,
-	conn2subId,
-	testAccAzConnAppId,
-	authKey))
+		testAccAzConnResType,
+		testAccAzConnResName,
+		testAccAzConnName,
+		testAccAzConnDirId,
+		testAccAzConnSubId,
+		testAccAzConnAppId,
+		authKey,
+		testAccAzConnResType,
+		testAccAzConnResName2,
+		conn2name,
+		testAccAzConnDirId,
+		conn2subId,
+		testAccAzConnAppId,
+		authKey))
 }
