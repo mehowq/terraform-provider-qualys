@@ -103,44 +103,6 @@ func TestAccAzConnector_Multiple(t *testing.T) {
 	})
 }
 
-func TestAccAzConnector_UpdateExistingSub(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAzConnectorDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAzConnectorUpdatePre(),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAzConnectorExists(fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName)),
-					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "name", testAccAzConnName),
-					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "directory_id", testAccAzConnDirId),
-					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "application_id", testAccAzConnAppId),
-					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "subscription_id", testAccAzConnSubId),
-				),
-			},
-			{
-				Config: testAccCheckAzConnectorUpdatePost(),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAzConnectorExists(fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName)),
-					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "name", testAccAzConnNamePostUpd),
-					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "directory_id", testAccAzConnDirIdPostUpd),
-					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "application_id", testAccAzConnAppIdPostUpd),
-					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "subscription_id", testAccAzConnSubIdPostUpd),
-				),
-			},
-		},
-	})
-}
-
 func testAccCheckAzConnectorBasic() string {
 	authKey := guuid.New().String()
 
