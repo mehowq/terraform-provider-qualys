@@ -2,19 +2,19 @@ package client
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"net/http"
-	"encoding/base64"
 )
 
 // Client holds all of the information required to connect to a server
 type Client struct {
-	hostname    string
-	api    		string
-	port        int
-	username    string
-	password	string
+	hostname   string
+	api        string
+	port       int
+	username   string
+	password   string
 	httpClient *http.Client
 }
 
@@ -22,10 +22,10 @@ type Client struct {
 func NewClient(hostname string, port int, api string, username string, password string) *Client {
 	return &Client{
 		hostname:   hostname,
-		api:   		api,
+		api:        api,
 		port:       port,
-		username:	username,
-		password:	password,
+		username:   username,
+		password:   password,
 		httpClient: &http.Client{},
 	}
 }
@@ -40,7 +40,7 @@ func (c *Client) httpRequest(path, method string, body bytes.Buffer) (closer io.
 		return nil, err
 	}
 	creds := base64.StdEncoding.EncodeToString([]byte(c.username + ":" + c.password))
-	req.Header.Add("Authorization", "Basic " + creds)
+	req.Header.Add("Authorization", "Basic "+creds)
 	switch method {
 	case "GET":
 	case "DELETE":
@@ -57,17 +57,17 @@ func (c *Client) httpRequest(path, method string, body bytes.Buffer) (closer io.
 	}
 
 	switch resp.StatusCode {
-		case
-			http.StatusOK,
-			http.StatusCreated,
-			http.StatusNoContent:
-		default:
-			respBody := new(bytes.Buffer)
-			_, err := respBody.ReadFrom(resp.Body)
-			if err != nil {
-				return nil, fmt.Errorf("got an unexpected status code: %v", resp.StatusCode)
-			}
-			return nil, fmt.Errorf("got an unexpected status code: %v - %s", resp.StatusCode, respBody.String())	
+	case
+		http.StatusOK,
+		http.StatusCreated,
+		http.StatusNoContent:
+	default:
+		respBody := new(bytes.Buffer)
+		_, err := respBody.ReadFrom(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("got an unexpected status code: %v", resp.StatusCode)
+		}
+		return nil, fmt.Errorf("got an unexpected status code: %v - %s", resp.StatusCode, respBody.String())
 	}
 	return resp.Body, nil
 }
