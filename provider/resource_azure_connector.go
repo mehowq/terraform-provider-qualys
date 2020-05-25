@@ -26,6 +26,7 @@ func resourceAzureConnector() *schema.Resource {
 			"subscription_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"application_id": &schema.Schema{
 				Type:     schema.TypeString,
