@@ -33,8 +33,8 @@ func resourceAzureConnector() *schema.Resource {
 				Required: true,
 			},
 			"authentication_key": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:      schema.TypeString,
+				Required:  true,
 				Sensitive: true,
 			},
 			"is_gov_cloud": &schema.Schema{
@@ -69,16 +69,14 @@ func resourceAzureConnectorCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	connector := client.AzureConnector{
-		Name:        		d.Get("name").(string),
-		Description: 		d.Get("description").(string),
-		DirectoryId:		d.Get("directory_id").(string),
-		SubscriptionId:		d.Get("subscription_id").(string),
-		ApplicationId: 		d.Get("application_id").(string),
-		AuthenticationKey: 	d.Get("authentication_key").(string),
-		IsGovCloud:			d.Get("is_gov_cloud").(bool),
+		Name:              d.Get("name").(string),
+		Description:       d.Get("description").(string),
+		DirectoryId:       d.Get("directory_id").(string),
+		SubscriptionId:    d.Get("subscription_id").(string),
+		ApplicationId:     d.Get("application_id").(string),
+		AuthenticationKey: d.Get("authentication_key").(string),
+		IsGovCloud:        d.Get("is_gov_cloud").(bool),
 	}
-
-	//TODO Add some validation to check if subscription_id is not already in use
 
 	newConnector, err := apiClient.NewAzureConnector(&connector)
 
@@ -124,15 +122,15 @@ func resourceAzureConnectorUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	connector := client.AzureConnector{
-		ConnectorId:		d.Id(),
-		Name:        		d.Get("name").(string),
-		Description: 		d.Get("description").(string),
-		DirectoryId:		d.Get("directory_id").(string),
-		SubscriptionId:		d.Get("subscription_id").(string),
+		ConnectorId:    d.Id(),
+		Name:           d.Get("name").(string),
+		Description:    d.Get("description").(string),
+		DirectoryId:    d.Get("directory_id").(string),
+		SubscriptionId: d.Get("subscription_id").(string),
+		ApplicationId:  d.Get("application_id").(string),
 		//Since Read returns an empty auth key, TF thinks it needs to update it
-		ApplicationId: 		d.Get("application_id").(string),
-		AuthenticationKey: 	d.Get("authentication_key").(string),
-		IsGovCloud:			d.Get("is_gov_cloud").(bool),
+		AuthenticationKey: d.Get("authentication_key").(string),
+		IsGovCloud:        d.Get("is_gov_cloud").(bool),
 	}
 
 	err := apiClient.UpdateAzureConnector(&connector)

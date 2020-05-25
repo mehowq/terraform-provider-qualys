@@ -71,13 +71,13 @@ func resourceAWSConnectorCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	connector := client.AWSConnector{
-		Name:        		d.Get("name").(string),
-		Description: 		d.Get("description").(string),
-		ARN:				d.Get("arn").(string),
-		ExternalId: 		d.Get("external_id").(string),
-		IsGovCloud:			d.Get("is_gov_cloud").(bool),
-		IsChinaRegion:		d.Get("is_china_region").(bool),
-		IsPortalConnector:	d.Get("is_portal_connector").(bool),
+		Name:              d.Get("name").(string),
+		Description:       d.Get("description").(string),
+		ARN:               d.Get("arn").(string),
+		ExternalId:        d.Get("external_id").(string),
+		IsGovCloud:        d.Get("is_gov_cloud").(bool),
+		IsChinaRegion:     d.Get("is_china_region").(bool),
+		IsPortalConnector: d.Get("is_portal_connector").(bool),
 	}
 
 	//TODO Add some validation to check if account_id is not already in use
@@ -127,15 +127,15 @@ func resourceAWSConnectorUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	connector := client.AWSConnector{
-		ConnectorId:		d.Id(),
-		Name:        		d.Get("name").(string),
-		Description: 		d.Get("description").(string),
-		AWSAccountId:		d.Get("aws_account_id").(string),
-		ARN:				d.Get("arn").(string),
-		ExternalId:			d.Get("external_id").(string),
-		IsGovCloud:			d.Get("is_gov_cloud").(bool),
-		IsChinaRegion:		d.Get("is_china_region").(bool),
-		IsPortalConnector:	d.Get("is_portal_connector").(bool),
+		ConnectorId:       d.Id(),
+		Name:              d.Get("name").(string),
+		Description:       d.Get("description").(string),
+		AWSAccountId:      d.Get("aws_account_id").(string),
+		ARN:               d.Get("arn").(string),
+		ExternalId:        d.Get("external_id").(string),
+		IsGovCloud:        d.Get("is_gov_cloud").(bool),
+		IsChinaRegion:     d.Get("is_china_region").(bool),
+		IsPortalConnector: d.Get("is_portal_connector").(bool),
 	}
 
 	err := apiClient.UpdateAWSConnector(&connector)
