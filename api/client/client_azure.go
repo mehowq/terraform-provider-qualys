@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 )
 
 const apiAzurePath = "/azure/connectors"
@@ -20,6 +21,27 @@ func (c *Client) GetAzureConnector(id string) (*AzureConnector, error) {
 		return nil, err
 	}
 	return connector, nil
+}
+
+// GetAllAzureConnectors gets Azure Connector details of all connectors currently configured
+func (c *Client) GetAllAzureConnectors(pageNo int, pageSize int) (*[]AzureConnector, error) {
+	body, err := c.httpRequest(fmt.Sprintf("%s?pageNo=%d&pageSize=%d", apiAzurePath, pageNo, pageSize), "GET", bytes.Buffer{})
+	if err != nil {
+		return nil, err
+	}
+
+	type ConnectorsContent struct {
+		connectors []AzureConnector `json:"content"`
+	}
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(body)
+
+	var content ConnectorsContent
+	if err := json.Unmarshal(buf.Bytes(), &content); err != nil {
+		log.Fatal(err)
+	}
+
+	return &content.connectors, nil
 }
 
 // NewAzureConnector creates new Azure Connector
