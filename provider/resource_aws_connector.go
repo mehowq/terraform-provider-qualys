@@ -92,6 +92,7 @@ func resourceAWSConnectorCreate(d *schema.ResourceData, m interface{}) error {
 	d.Set("last_synced_on", newConnector.LastSyncedOn)
 	d.Set("total_assets", newConnector.TotalAssets)
 	d.Set("state", newConnector.State)
+	return resourceAWSConnectorRead(d, m)
 	return nil
 }
 

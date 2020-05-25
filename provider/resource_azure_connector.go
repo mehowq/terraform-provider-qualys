@@ -89,6 +89,7 @@ func resourceAzureConnectorCreate(d *schema.ResourceData, m interface{}) error {
 	d.Set("last_synced_on", newConnector.LastSyncedOn)
 	d.Set("total_assets", newConnector.TotalAssets)
 	d.Set("state", newConnector.State)
+	return resourceAzureConnectorRead(d, m)
 	return nil
 }
 
