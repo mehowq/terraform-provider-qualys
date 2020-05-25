@@ -90,7 +90,6 @@ func resourceAzureConnectorCreate(d *schema.ResourceData, m interface{}) error {
 	d.Set("total_assets", newConnector.TotalAssets)
 	d.Set("state", newConnector.State)
 	return resourceAzureConnectorRead(d, m)
-	return nil
 }
 
 func resourceAzureConnectorRead(d *schema.ResourceData, m interface{}) error {

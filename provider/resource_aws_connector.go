@@ -93,7 +93,6 @@ func resourceAWSConnectorCreate(d *schema.ResourceData, m interface{}) error {
 	d.Set("total_assets", newConnector.TotalAssets)
 	d.Set("state", newConnector.State)
 	return resourceAWSConnectorRead(d, m)
-	return nil
 }
 
 func resourceAWSConnectorRead(d *schema.ResourceData, m interface{}) error {
