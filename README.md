@@ -4,6 +4,7 @@
 This provider allows managing Azure and AWS Qualys Cloud Connectors configured in Qualys Portal Cloud View.
 
 https://www.qualys.com/docs/qualys-cloudview-api-user-guide.pdf
+
 https://qualysguard.qualys.eu/cloudview-api/swagger-ui.html#!/
 
 
