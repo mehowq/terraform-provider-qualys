@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 )
 
 const apiAzurePath = "/azure/connectors"
@@ -30,18 +29,19 @@ func (c *Client) GetAllAzureConnectors(pageNo int, pageSize int) (*[]AzureConnec
 		return nil, err
 	}
 
-	type ConnectorsContent struct {
-		connectors []AzureConnector `json:"content"`
-	}
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(body)
 
-	var content ConnectorsContent
-	if err := json.Unmarshal(buf.Bytes(), &content); err != nil {
-		log.Fatal(err)
+	type ConnectorsContent struct {
+		Connectors []AzureConnector `json:"content"`
 	}
 
-	return &content.connectors, nil
+	var content ConnectorsContent
+	if err := json.Unmarshal(buf.Bytes(), &content); err != nil {
+		return nil, err
+	}
+
+	return &content.Connectors, nil
 }
 
 // NewAzureConnector creates new Azure Connector
