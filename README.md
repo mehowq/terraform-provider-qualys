@@ -10,10 +10,21 @@ https://qualysguard.qualys.eu/cloudview-api/swagger-ui.html#!/
 
 ## Compiling
 
-From Windows:
+For Windows
 ```
 go build -o terraform-provider-qualys_v0.1.0.exe
 ```
+
+For Linux
+```
+GOOS=linux GOARCH=amd64 go build -o terraform-provider-qualys_v0.1.0
+# make it executable
+git update-index --chmod=+x terraform-provider-qualys_v0.1.0
+```
+
+Place the compiled files into:
+.terrafrom/plugins/linux_amd64/terraform-provider-qualys_v0.1.0
+.terrafrom/plugins/windows_amd64/terraform-provider-qualys_v0.1.0.exe
 
 ## Testing
 
