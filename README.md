@@ -19,7 +19,7 @@ For Linux
 ```
 GOOS=linux GOARCH=amd64 go build -o terraform-provider-qualys_v0.1.0
 # make it executable
-git update-index --chmod=+x terraform-provider-qualys_v0.1.0
+git update-index --chmod=+x .terraform/plugins/linux_amd64/terraform-provider-qualys_v0.1.0
 ```
 
 Place the compiled files into:
