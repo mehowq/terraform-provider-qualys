@@ -8,7 +8,7 @@ import (
 	"github.com/mehowq/terraform-provider-qualys/api/client"
 )
 
-func dataSourceAzureConnector() *schema.Resource {
+func dataSourceCloudViewAzureConnector() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"connector_id": &schema.Schema{
@@ -52,19 +52,19 @@ func dataSourceAzureConnector() *schema.Resource {
 				Computed: true,
 			},
 		},
-		Read: dataSourceAzureConnectorRead,
+		Read: dataSourceCloudViewAzureConnectorRead,
 	}
 }
 
-func dataSourceAzureConnectorRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceCloudViewAzureConnectorRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	subscriptionId := d.Get("subscription_id").(string)
 	connectorId := d.Get("connector_id").(string)
 
-	var connector *client.AzureConnector
+	var connector *client.CloudViewAzureConnector
 	if subscriptionId != "" {
-		allConnectors, err := apiClient.GetAllAzureConnectors(0, 99999)
+		allConnectors, err := apiClient.GetAllCloudViewAzureConnectors(0, 99999)
 		if err != nil {
 			return err
 		}
@@ -80,7 +80,7 @@ func dataSourceAzureConnectorRead(d *schema.ResourceData, m interface{}) error {
 		}
 	} else {
 		var err error
-		connector, err = apiClient.GetAzureConnector(connectorId)
+		connector, err = apiClient.GetCloudViewAzureConnector(connectorId)
 		if err != nil {
 			if strings.Contains(err.Error(), "not found") {
 				d.SetId("")

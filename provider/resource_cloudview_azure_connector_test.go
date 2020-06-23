@@ -137,7 +137,7 @@ func testAccCheckAzConnectorExists(resource string) resource.TestCheckFunc {
 		}
 		connectorId := rs.Primary.ID
 		apiClient := testAccProvider.Meta().(*client.Client)
-		_, err := apiClient.GetAzureConnector(connectorId)
+		_, err := apiClient.GetCloudViewAzureConnector(connectorId)
 		if err != nil {
 			return fmt.Errorf("error fetching Azure Connector %s with ID %s: %s", resource, connectorId, err)
 		}
@@ -154,7 +154,7 @@ func testAccCheckAzConnectorDestroy(s *terraform.State) error {
 		}
 
 		connectorId := rs.Primary.ID
-		_, err := apiClient.GetAzureConnector(connectorId)
+		_, err := apiClient.GetCloudViewAzureConnector(connectorId)
 		if err == nil {
 			return fmt.Errorf("Azure Connector %s still exists", connectorId)
 		}

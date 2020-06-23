@@ -8,7 +8,7 @@ import (
 	"github.com/mehowq/terraform-provider-qualys/api/client"
 )
 
-func resourceAzureConnector() *schema.Resource {
+func resourceCloudViewAzureConnector() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
@@ -54,21 +54,21 @@ func resourceAzureConnector() *schema.Resource {
 				Computed: true,
 			},
 		},
-		Create: resourceAzureConnectorCreate,
-		Read:   resourceAzureConnectorRead,
-		Update: resourceAzureConnectorUpdate,
-		Delete: resourceAzureConnectorDelete,
-		Exists: resourceAzureConnectorExists,
+		Create: resourceCloudViewAzureConnectorCreate,
+		Read:   resourceCloudViewAzureConnectorRead,
+		Update: resourceCloudViewAzureConnectorUpdate,
+		Delete: resourceCloudViewAzureConnectorDelete,
+		Exists: resourceCloudViewAzureConnectorExists,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
 	}
 }
 
-func resourceAzureConnectorCreate(d *schema.ResourceData, m interface{}) error {
+func resourceCloudViewAzureConnectorCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	connector := client.AzureConnector{
+	connector := client.CloudViewAzureConnector{
 		Name:              d.Get("name").(string),
 		Description:       d.Get("description").(string),
 		DirectoryId:       d.Get("directory_id").(string),
@@ -78,7 +78,7 @@ func resourceAzureConnectorCreate(d *schema.ResourceData, m interface{}) error {
 		IsGovCloud:        d.Get("is_gov_cloud").(bool),
 	}
 
-	newConnector, err := apiClient.NewAzureConnector(&connector)
+	newConnector, err := apiClient.NewCloudViewAzureConnector(&connector)
 
 	if err != nil {
 		return err
@@ -87,14 +87,14 @@ func resourceAzureConnectorCreate(d *schema.ResourceData, m interface{}) error {
 	d.Set("last_synced_on", newConnector.LastSyncedOn)
 	d.Set("total_assets", newConnector.TotalAssets)
 	d.Set("state", newConnector.State)
-	return resourceAzureConnectorRead(d, m)
+	return resourceCloudViewAzureConnectorRead(d, m)
 }
 
-func resourceAzureConnectorRead(d *schema.ResourceData, m interface{}) error {
+func resourceCloudViewAzureConnectorRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	connectorId := d.Id()
-	connector, err := apiClient.GetAzureConnector(connectorId)
+	connector, err := apiClient.GetCloudViewAzureConnector(connectorId)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
 			d.SetId("")
@@ -118,10 +118,10 @@ func resourceAzureConnectorRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAzureConnectorUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceCloudViewAzureConnectorUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	connector := client.AzureConnector{
+	connector := client.CloudViewAzureConnector{
 		ConnectorId:    d.Id(),
 		Name:           d.Get("name").(string),
 		Description:    d.Get("description").(string),
@@ -133,19 +133,19 @@ func resourceAzureConnectorUpdate(d *schema.ResourceData, m interface{}) error {
 		IsGovCloud:        d.Get("is_gov_cloud").(bool),
 	}
 
-	err := apiClient.UpdateAzureConnector(&connector)
+	err := apiClient.UpdateCloudViewAzureConnector(&connector)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func resourceAzureConnectorDelete(d *schema.ResourceData, m interface{}) error {
+func resourceCloudViewAzureConnectorDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	connectorId := d.Id()
 
-	err := apiClient.DeleteAzureConnector(connectorId)
+	err := apiClient.DeleteCloudViewAzureConnector(connectorId)
 	if err != nil {
 		return err
 	}
@@ -153,11 +153,11 @@ func resourceAzureConnectorDelete(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAzureConnectorExists(d *schema.ResourceData, m interface{}) (bool, error) {
+func resourceCloudViewAzureConnectorExists(d *schema.ResourceData, m interface{}) (bool, error) {
 	apiClient := m.(*client.Client)
 
 	connectorId := d.Id()
-	_, err := apiClient.GetAzureConnector(connectorId)
+	_, err := apiClient.GetCloudViewAzureConnector(connectorId)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
 			return false, nil

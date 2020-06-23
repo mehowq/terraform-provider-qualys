@@ -8,7 +8,7 @@ import (
 	"github.com/mehowq/terraform-provider-qualys/api/client"
 )
 
-func resourceAWSConnector() *schema.Resource {
+func resourceCloudViewAWSConnector() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
@@ -56,21 +56,21 @@ func resourceAWSConnector() *schema.Resource {
 				Computed: true,
 			},
 		},
-		Create: resourceAWSConnectorCreate,
-		Read:   resourceAWSConnectorRead,
-		Update: resourceAWSConnectorUpdate,
-		Delete: resourceAWSConnectorDelete,
-		Exists: resourceAWSConnectorExists,
+		Create: resourceCloudViewAWSConnectorCreate,
+		Read:   resourceCloudViewAWSConnectorRead,
+		Update: resourceCloudViewAWSConnectorUpdate,
+		Delete: resourceCloudViewAWSConnectorDelete,
+		Exists: resourceCloudViewAWSConnectorExists,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
 	}
 }
 
-func resourceAWSConnectorCreate(d *schema.ResourceData, m interface{}) error {
+func resourceCloudViewAWSConnectorCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	connector := client.AWSConnector{
+	connector := client.CloudViewAWSConnector{
 		Name:              d.Get("name").(string),
 		Description:       d.Get("description").(string),
 		ARN:               d.Get("arn").(string),
@@ -82,7 +82,7 @@ func resourceAWSConnectorCreate(d *schema.ResourceData, m interface{}) error {
 
 	//TODO Add some validation to check if account_id is not already in use
 
-	newConnector, err := apiClient.NewAWSConnector(&connector)
+	newConnector, err := apiClient.NewCloudViewAWSConnector(&connector)
 
 	if err != nil {
 		return err
@@ -92,14 +92,14 @@ func resourceAWSConnectorCreate(d *schema.ResourceData, m interface{}) error {
 	d.Set("last_synced_on", newConnector.LastSyncedOn)
 	d.Set("total_assets", newConnector.TotalAssets)
 	d.Set("state", newConnector.State)
-	return resourceAWSConnectorRead(d, m)
+	return resourceCloudViewAWSConnectorRead(d, m)
 }
 
-func resourceAWSConnectorRead(d *schema.ResourceData, m interface{}) error {
+func resourceCloudViewAWSConnectorRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	connectorId := d.Id()
-	connector, err := apiClient.GetAWSConnector(connectorId)
+	connector, err := apiClient.GetCloudViewAWSConnector(connectorId)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
 			d.SetId("")
@@ -123,10 +123,10 @@ func resourceAWSConnectorRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAWSConnectorUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceCloudViewAWSConnectorUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	connector := client.AWSConnector{
+	connector := client.CloudViewAWSConnector{
 		ConnectorId:       d.Id(),
 		Name:              d.Get("name").(string),
 		Description:       d.Get("description").(string),
@@ -138,19 +138,19 @@ func resourceAWSConnectorUpdate(d *schema.ResourceData, m interface{}) error {
 		IsPortalConnector: d.Get("is_portal_connector").(bool),
 	}
 
-	err := apiClient.UpdateAWSConnector(&connector)
+	err := apiClient.UpdateCloudViewAWSConnector(&connector)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func resourceAWSConnectorDelete(d *schema.ResourceData, m interface{}) error {
+func resourceCloudViewAWSConnectorDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	connectorId := d.Id()
 
-	err := apiClient.DeleteAWSConnector(connectorId)
+	err := apiClient.DeleteCloudViewAWSConnector(connectorId)
 	if err != nil {
 		return err
 	}
@@ -158,11 +158,11 @@ func resourceAWSConnectorDelete(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAWSConnectorExists(d *schema.ResourceData, m interface{}) (bool, error) {
+func resourceCloudViewAWSConnectorExists(d *schema.ResourceData, m interface{}) (bool, error) {
 	apiClient := m.(*client.Client)
 
 	connectorId := d.Id()
-	_, err := apiClient.GetAWSConnector(connectorId)
+	_, err := apiClient.GetCloudViewAWSConnector(connectorId)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
 			return false, nil

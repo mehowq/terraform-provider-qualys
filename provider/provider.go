@@ -1,8 +1,8 @@
 package provider
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	"github.com/mehowq/terraform-provider-qualys/api/client"
 )
 
@@ -32,18 +32,18 @@ func Provider() terraform.ResourceProvider {
 			"password": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Sensitive:	 true,
+				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("QUALYS_API_PASSWORD", ""),
 			},
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"qualys_azure_connector": dataSourceAzureConnector(),
-			"qualys_aws_connector": dataSourceAWSConnector(),
+			"qualys_azure_connector": dataSourceCloudViewAzureConnector(),
+			"qualys_aws_connector":   dataSourceCloudViewAWSConnector(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			//Terraform gets confused and downloads azure provider if we name it simply azure_connector
-			"qualys_azure_connector": resourceAzureConnector(),
-			"qualys_aws_connector": resourceAWSConnector(),
+			"qualys_azure_connector": resourceCloudViewAzureConnector(),
+			"qualys_aws_connector":   resourceCloudViewAWSConnector(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
