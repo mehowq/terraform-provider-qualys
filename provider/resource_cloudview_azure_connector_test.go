@@ -11,7 +11,7 @@ import (
 	"github.com/mehowq/terraform-provider-qualys/api/client"
 )
 
-const testAccAzConnResType = "qualys_azure_connector"
+const testAccAzConnResType = "qualys_cloudview_azure_connector"
 const testAccAzConnResName = "connector_az_acctest"
 const testAccAzConnResName2 = "connector_az_acctest2"
 

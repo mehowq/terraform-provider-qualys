@@ -8,13 +8,13 @@ import (
 
 const apiAzurePath = "/azure/connectors"
 
-// GetCloudViewAzureConnector gets an Azure Connector details with a specific Connector ID from the server
-func (c *Client) GetCloudViewAzureConnector(id string) (*CloudViewAzureConnector, error) {
+// GetAssetViewAzureConnector gets an Azure Connector details with a specific Connector ID from the server
+func (c *Client) GetAssetViewAzureConnector(id string) (*AssetViewAzureConnector, error) {
 	body, err := c.httpRequest(fmt.Sprintf("%s/%s", apiAzurePath, id), "GET", bytes.Buffer{})
 	if err != nil {
 		return nil, err
 	}
-	connector := &CloudViewAzureConnector{}
+	connector := &AssetViewAzureConnector{}
 	err = json.NewDecoder(body).Decode(connector)
 	if err != nil {
 		return nil, err
@@ -22,8 +22,8 @@ func (c *Client) GetCloudViewAzureConnector(id string) (*CloudViewAzureConnector
 	return connector, nil
 }
 
-// GetAllCloudViewAzureConnectors gets Azure Connector details of all connectors currently configured
-func (c *Client) GetAllCloudViewAzureConnectors(pageNo int, pageSize int) (*[]CloudViewAzureConnector, error) {
+// GetAllAssetViewAzureConnectors gets Azure Connector details of all connectors currently configured
+func (c *Client) GetAllAssetViewAzureConnectors(pageNo int, pageSize int) (*[]AssetViewAzureConnector, error) {
 	body, err := c.httpRequest(fmt.Sprintf("%s?pageNo=%d&pageSize=%d", apiAzurePath, pageNo, pageSize), "GET", bytes.Buffer{})
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (c *Client) GetAllCloudViewAzureConnectors(pageNo int, pageSize int) (*[]Cl
 	buf.ReadFrom(body)
 
 	type ConnectorsContent struct {
-		Connectors []CloudViewAzureConnector `json:"content"`
+		Connectors []AssetViewAzureConnector `json:"content"`
 	}
 
 	var content ConnectorsContent
@@ -44,8 +44,8 @@ func (c *Client) GetAllCloudViewAzureConnectors(pageNo int, pageSize int) (*[]Cl
 	return &content.Connectors, nil
 }
 
-// NewCloudViewAzureConnector creates new Azure Connector
-func (c *Client) NewCloudViewAzureConnector(connector *CloudViewAzureConnector) (*CloudViewAzureConnector, error) {
+// NewAssetViewAzureConnector creates new Azure Connector
+func (c *Client) NewAssetViewAzureConnector(connector *AssetViewAzureConnector) (*AssetViewAzureConnector, error) {
 	buf := bytes.Buffer{}
 	err := json.NewEncoder(&buf).Encode(connector)
 	if err != nil {
@@ -55,7 +55,7 @@ func (c *Client) NewCloudViewAzureConnector(connector *CloudViewAzureConnector) 
 	if err != nil {
 		return nil, err
 	}
-	newConnector := &CloudViewAzureConnector{}
+	newConnector := &AssetViewAzureConnector{}
 	err = json.NewDecoder(body).Decode(newConnector)
 	if err != nil {
 		return nil, err
@@ -63,8 +63,8 @@ func (c *Client) NewCloudViewAzureConnector(connector *CloudViewAzureConnector) 
 	return newConnector, nil
 }
 
-// UpdateCloudViewAzureConnector updates details of the given Azure Connector
-func (c *Client) UpdateCloudViewAzureConnector(connector *CloudViewAzureConnector) error {
+// UpdateAssetViewAzureConnector updates details of the given Azure Connector
+func (c *Client) UpdateAssetViewAzureConnector(connector *AssetViewAzureConnector) error {
 	buf := bytes.Buffer{}
 	err := json.NewEncoder(&buf).Encode(connector)
 	if err != nil {
@@ -77,8 +77,8 @@ func (c *Client) UpdateCloudViewAzureConnector(connector *CloudViewAzureConnecto
 	return nil
 }
 
-// DeleteCloudViewAzureConnector removes CloudViewAzureConnector from the server
-func (c *Client) DeleteCloudViewAzureConnector(connectorId string) error {
+// DeleteAssetViewAzureConnector removes AssetViewAzureConnector from the server
+func (c *Client) DeleteAssetViewAzureConnector(connectorId string) error {
 	body := fmt.Sprintf("[\"%s\"]", connectorId)
 	buf := bytes.Buffer{}
 	buf.WriteString(body)

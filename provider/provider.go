@@ -37,13 +37,17 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"qualys_azure_connector": dataSourceCloudViewAzureConnector(),
-			"qualys_aws_connector":   dataSourceCloudViewAWSConnector(),
+			"qualys_cloudview_azure_connector": dataSourceCloudViewAzureConnector(),
+			"qualys_cloudview_aws_connector":   dataSourceCloudViewAWSConnector(),
+			"qualys_assetview_azure_connector": dataSourceAssetViewAzureConnector(),
+			"qualys_assetview_aws_connector":   dataSourceAssetViewAWSConnector(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			//Terraform gets confused and downloads azure provider if we name it simply azure_connector
-			"qualys_azure_connector": resourceCloudViewAzureConnector(),
-			"qualys_aws_connector":   resourceCloudViewAWSConnector(),
+			"qualys_cloudview_azure_connector": resourceCloudViewAzureConnector(),
+			"qualys_cloudview_aws_connector":   resourceCloudViewAWSConnector(),
+			"qualys_assetview_azure_connector": resourceAssetViewAzureConnector(),
+			"qualys_assetview_aws_connector":   resourceAssetViewAWSConnector(),
 		},
 		ConfigureFunc: providerConfigure,
 	}

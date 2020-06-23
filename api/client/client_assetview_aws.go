@@ -8,13 +8,13 @@ import (
 
 const apiAWSPath = "/aws/connectors"
 
-// GetCloudViewAWSConnector gets an AWS Connector details with a specific Connector ID from the server
-func (c *Client) GetCloudViewAWSConnector(id string) (*CloudViewAWSConnector, error) {
+// GetAssetViewAWSConnector gets an AWS Connector details with a specific Connector ID from the server
+func (c *Client) GetAssetViewAWSConnector(id string) (*AssetViewAWSConnector, error) {
 	body, err := c.httpRequest(fmt.Sprintf("%s/%s", apiAWSPath, id), "GET", bytes.Buffer{})
 	if err != nil {
 		return nil, err
 	}
-	connector := &CloudViewAWSConnector{}
+	connector := &AssetViewAWSConnector{}
 	err = json.NewDecoder(body).Decode(connector)
 	if err != nil {
 		return nil, err
@@ -22,8 +22,8 @@ func (c *Client) GetCloudViewAWSConnector(id string) (*CloudViewAWSConnector, er
 	return connector, nil
 }
 
-// NewCloudViewAWSConnector creates new AWS Connector
-func (c *Client) NewCloudViewAWSConnector(connector *CloudViewAWSConnector) (*CloudViewAWSConnector, error) {
+// NewAssetViewAWSConnector creates new AWS Connector
+func (c *Client) NewAssetViewAWSConnector(connector *AssetViewAWSConnector) (*AssetViewAWSConnector, error) {
 	buf := bytes.Buffer{}
 	err := json.NewEncoder(&buf).Encode(connector)
 	if err != nil {
@@ -33,7 +33,7 @@ func (c *Client) NewCloudViewAWSConnector(connector *CloudViewAWSConnector) (*Cl
 	if err != nil {
 		return nil, err
 	}
-	newConnector := &CloudViewAWSConnector{}
+	newConnector := &AssetViewAWSConnector{}
 	err = json.NewDecoder(body).Decode(newConnector)
 	if err != nil {
 		return nil, err
@@ -41,8 +41,8 @@ func (c *Client) NewCloudViewAWSConnector(connector *CloudViewAWSConnector) (*Cl
 	return newConnector, nil
 }
 
-// UpdateCloudViewAWSConnector updates details of the given AWS Connector
-func (c *Client) UpdateCloudViewAWSConnector(connector *CloudViewAWSConnector) error {
+// UpdateAssetViewAWSConnector updates details of the given AWS Connector
+func (c *Client) UpdateAssetViewAWSConnector(connector *AssetViewAWSConnector) error {
 	buf := bytes.Buffer{}
 	err := json.NewEncoder(&buf).Encode(connector)
 	if err != nil {
@@ -55,8 +55,8 @@ func (c *Client) UpdateCloudViewAWSConnector(connector *CloudViewAWSConnector) e
 	return nil
 }
 
-// DeleteCloudViewAWSConnector removes CloudViewAWSConnector from the server
-func (c *Client) DeleteCloudViewAWSConnector(connectorId string) error {
+// DeleteAssetViewAWSConnector removes AssetViewAWSConnector from the server
+func (c *Client) DeleteAssetViewAWSConnector(connectorId string) error {
 	body := fmt.Sprintf("[\"%s\"]", connectorId)
 	buf := bytes.Buffer{}
 	buf.WriteString(body)
