@@ -104,7 +104,7 @@ func dataSourceAssetViewAzureConnectorRead(d *schema.ResourceData, m interface{}
 			if strings.Contains(err.Error(), "not found") {
 				d.SetId("")
 			} else {
-				return fmt.Errorf("error finding AssetView Azure Connector with ID %s", connectorId)
+				return fmt.Errorf("error finding AssetView Azure Connector with ID %d", connectorId)
 			}
 		}
 	}
