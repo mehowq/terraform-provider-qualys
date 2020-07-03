@@ -31,9 +31,6 @@ func testAccPreCheck(t *testing.T) {
 	if v := os.Getenv("QUALYS_ASSETVIEW_API"); v == "" {
 		t.Fatal("QUALYS_ASSETVIEW_API environment variable must be set for acceptance tests")
 	}
-	if v := os.Getenv("QUALYS_API_PORT"); v == "" {
-		t.Fatal("QUALYS_API_PORT environment variable must be set for acceptance tests")
-	}
 	if v := os.Getenv("QUALYS_API_USERNAME"); v == "" {
 		t.Fatal("QUALYS_API_USERNAME environment variable must be set for acceptance tests")
 	}
