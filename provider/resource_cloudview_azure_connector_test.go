@@ -11,37 +11,37 @@ import (
 	"github.com/mehowq/terraform-provider-qualys/api/client"
 )
 
-const testAccAzConnResType = "qualys_cloudview_azure_connector"
-const testAccAzConnResName = "connector_az_acctest"
-const testAccAzConnResName2 = "connector_az_acctest2"
+const testAccCvAzConnResType = "qualys_cloudview_azure_connector"
+const testAccCvAzConnResName = "testacc_cv_az"
+const testAccCvAzConnResName2 = "testacc_cv_az2"
 
-var testAccAzConnName = fmt.Sprintf("TF_AccTest_AzConn_%s", guuid.New().String())
-var testAccAzConnDirId = guuid.New().String()
-var testAccAzConnSubId = guuid.New().String()
-var testAccAzConnAppId = guuid.New().String()
-var testAccAzConnNamePostUpd = fmt.Sprintf("TF_AccTest_AzConn_%s", guuid.New().String())
-var testAccAzConnDirIdPostUpd = guuid.New().String()
-var testAccAzConnSubIdPostUpd = guuid.New().String()
-var testAccAzConnAppIdPostUpd = guuid.New().String()
+var testAccCvAzConnName = fmt.Sprintf("TF_AccTest_CV_AzConn_%s", guuid.New().String())
+var testAccCvAzConnDirId = guuid.New().String()
+var testAccCvAzConnSubId = guuid.New().String()
+var testAccCvAzConnAppId = guuid.New().String()
+var testAccCvAzConnNamePostUpd = fmt.Sprintf("TF_AccTest_CV_AzConn_%s", guuid.New().String())
+var testAccCvAzConnDirIdPostUpd = guuid.New().String()
+var testAccCvAzConnSubIdPostUpd = guuid.New().String()
+var testAccCvAzConnAppIdPostUpd = guuid.New().String()
 
-func TestAccAzConnector_Basic(t *testing.T) {
+func TestAccCvAzConnector_Basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAzConnectorDestroy,
+		CheckDestroy: testAccCheckCvAzConnectorDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAzConnectorBasic(),
+				Config: testAccCheckCvAzConnectorBasic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAzConnectorExists(fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName)),
+					testAccCheckCvAzConnectorExists(fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName)),
 					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "name", testAccAzConnName),
+						fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName), "name", testAccCvAzConnName),
 					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "directory_id", testAccAzConnDirId),
+						fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName), "directory_id", testAccCvAzConnDirId),
 					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "subscription_id", testAccAzConnSubId),
+						fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName), "subscription_id", testAccCvAzConnSubId),
 					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "application_id", testAccAzConnAppId),
+						fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName), "application_id", testAccCvAzConnAppId),
 				),
 			},
 		},
@@ -52,34 +52,34 @@ func TestAccAzConnector_Update(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAzConnectorDestroy,
+		CheckDestroy: testAccCheckCvAzConnectorDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAzConnectorUpdatePre(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAzConnectorExists(fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName)),
+					testAccCheckCvAzConnectorExists(fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName)),
 					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "name", testAccAzConnName),
+						fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName), "name", testAccCvAzConnName),
 					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "directory_id", testAccAzConnDirId),
+						fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName), "directory_id", testAccCvAzConnDirId),
 					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "application_id", testAccAzConnAppId),
+						fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName), "application_id", testAccCvAzConnAppId),
 					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "subscription_id", testAccAzConnSubId),
+						fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName), "subscription_id", testAccCvAzConnSubId),
 				),
 			},
 			{
 				Config: testAccCheckAzConnectorUpdatePost(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAzConnectorExists(fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName)),
+					testAccCheckCvAzConnectorExists(fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName)),
 					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "name", testAccAzConnNamePostUpd),
+						fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName), "name", testAccCvAzConnNamePostUpd),
 					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "directory_id", testAccAzConnDirIdPostUpd),
+						fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName), "directory_id", testAccCvAzConnDirIdPostUpd),
 					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "application_id", testAccAzConnAppIdPostUpd),
+						fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName), "application_id", testAccCvAzConnAppIdPostUpd),
 					resource.TestCheckResourceAttr(
-						fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName), "subscription_id", testAccAzConnSubIdPostUpd),
+						fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName), "subscription_id", testAccCvAzConnSubIdPostUpd),
 				),
 			},
 		},
@@ -90,26 +90,26 @@ func TestAccAzConnector_Multiple(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAzConnectorDestroy,
+		CheckDestroy: testAccCheckCvAzConnectorDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAzConnectorMultiple(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAzConnectorExists(fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName)),
-					testAccCheckAzConnectorExists(fmt.Sprintf("%s.%s", testAccAzConnResType, testAccAzConnResName2)),
+					testAccCheckCvAzConnectorExists(fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName)),
+					testAccCheckCvAzConnectorExists(fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName2)),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAzConnectorBasic() string {
+func testAccCheckCvAzConnectorBasic() string {
 	authKey := guuid.New().String()
 
 	return (fmt.Sprintf(`
 resource "%s" "%s" {
 	name = "%s"
-	description = "Terraform Acceptance Test Azure Connector with random subscription and authentication details. Basic Test."
+	description = "Terraform Acceptance Test Cloud View Azure Connector with random subscription and authentication details. Basic Test."
 	directory_id = "%s"
 	subscription_id = "%s"
 	application_id = "%s"
@@ -117,46 +117,46 @@ resource "%s" "%s" {
 	is_gov_cloud = false
 }
 	`,
-		testAccAzConnResType,
-		testAccAzConnResName,
-		testAccAzConnName,
-		testAccAzConnDirId,
-		testAccAzConnSubId,
-		testAccAzConnAppId,
+		testAccCvAzConnResType,
+		testAccCvAzConnResName,
+		testAccCvAzConnName,
+		testAccCvAzConnDirId,
+		testAccCvAzConnSubId,
+		testAccCvAzConnAppId,
 		authKey))
 }
 
-func testAccCheckAzConnectorExists(resource string) resource.TestCheckFunc {
+func testAccCheckCvAzConnectorExists(resource string) resource.TestCheckFunc {
 	return func(state *terraform.State) error {
 		rs, ok := state.RootModule().Resources[resource]
 		if !ok {
 			return fmt.Errorf("Not found: %s", resource)
 		}
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Azure Connector ID is set for %s", resource)
+			return fmt.Errorf("No CloudView Azure Connector ID is set for %s", resource)
 		}
 		connectorId := rs.Primary.ID
 		apiClient := testAccProvider.Meta().(*client.Client)
 		_, err := apiClient.GetCloudViewAzureConnector(connectorId)
 		if err != nil {
-			return fmt.Errorf("error fetching Azure Connector %s with ID %s: %s", resource, connectorId, err)
+			return fmt.Errorf("error fetching CloudView Azure Connector %s with ID %s: %s", resource, connectorId, err)
 		}
 		return nil
 	}
 }
 
-func testAccCheckAzConnectorDestroy(s *terraform.State) error {
+func testAccCheckCvAzConnectorDestroy(s *terraform.State) error {
 	apiClient := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != testAccAzConnResType {
+		if rs.Type != testAccCvAzConnResType {
 			continue
 		}
 
 		connectorId := rs.Primary.ID
 		_, err := apiClient.GetCloudViewAzureConnector(connectorId)
 		if err == nil {
-			return fmt.Errorf("Azure Connector %s still exists", connectorId)
+			return fmt.Errorf("CloudView Azure Connector %s still exists", connectorId)
 		}
 		notFoundErr := "not found"
 		expectedErr := regexp.MustCompile(notFoundErr)
@@ -174,7 +174,7 @@ func testAccCheckAzConnectorUpdatePre() string {
 	return (fmt.Sprintf(`
 resource "%s" "%s" {
 	name = "%s"
-	description = "Terraform Acceptance Test Azure Connector with random subscription and authentication details. Pre Update Test."
+	description = "Terraform Acceptance Test Cloud View Azure Connector with random subscription and authentication details. Pre Update Test."
 	directory_id = "%s"
 	subscription_id = "%s"
 	application_id = "%s"
@@ -182,12 +182,12 @@ resource "%s" "%s" {
 	is_gov_cloud = false
 }
 	`,
-		testAccAzConnResType,
-		testAccAzConnResName,
-		testAccAzConnName,
-		testAccAzConnDirId,
-		testAccAzConnSubId,
-		testAccAzConnAppId,
+		testAccCvAzConnResType,
+		testAccCvAzConnResName,
+		testAccCvAzConnName,
+		testAccCvAzConnDirId,
+		testAccCvAzConnSubId,
+		testAccCvAzConnAppId,
 		authKey))
 }
 
@@ -197,7 +197,7 @@ func testAccCheckAzConnectorUpdatePost() string {
 	return (fmt.Sprintf(`
 resource "%s" "%s" {
 	name = "%s"
-	description = "Terraform Acceptance Test Azure Connector with random subscription and authentication details. Post Update Test."
+	description = "Terraform Acceptance Test Cloud View Azure Connector with random subscription and authentication details. Post Update Test."
 	directory_id = "%s"
 	subscription_id = "%s"
 	application_id = "%s"
@@ -205,12 +205,12 @@ resource "%s" "%s" {
 	is_gov_cloud = false
 }
 	`,
-		testAccAzConnResType,
-		testAccAzConnResName,
-		testAccAzConnNamePostUpd,
-		testAccAzConnDirIdPostUpd,
-		testAccAzConnSubIdPostUpd,
-		testAccAzConnAppIdPostUpd,
+		testAccCvAzConnResType,
+		testAccCvAzConnResName,
+		testAccCvAzConnNamePostUpd,
+		testAccCvAzConnDirIdPostUpd,
+		testAccCvAzConnSubIdPostUpd,
+		testAccCvAzConnAppIdPostUpd,
 		authKey))
 }
 
@@ -222,7 +222,7 @@ func testAccCheckAzConnectorMultiple() string {
 	return (fmt.Sprintf(`
 resource "%s" "%s" {
 	name = "%s"
-	description = "Terraform Acceptance Test Azure Connector with random subscription and authentication details. Multiple 1 Test."
+	description = "Terraform Acceptance Test Cloud View Azure Connector with random subscription and authentication details. Multiple 1 Test."
 	directory_id = "%s"
 	subscription_id = "%s"
 	application_id = "%s"
@@ -232,7 +232,7 @@ resource "%s" "%s" {
 
 resource "%s" "%s" {
 	name = "%s"
-	description = "Terraform Acceptance Test Azure Connector with random subscription and authentication details. Multiple 2 Test."
+	description = "Terraform Acceptance Test Cloud View Azure Connector with random subscription and authentication details. Multiple 2 Test."
 	directory_id = "%s"
 	subscription_id = "%s"
 	application_id = "%s"
@@ -240,18 +240,18 @@ resource "%s" "%s" {
 	is_gov_cloud = false
 }
 	`,
-		testAccAzConnResType,
-		testAccAzConnResName,
-		testAccAzConnName,
-		testAccAzConnDirId,
-		testAccAzConnSubId,
-		testAccAzConnAppId,
+		testAccCvAzConnResType,
+		testAccCvAzConnResName,
+		testAccCvAzConnName,
+		testAccCvAzConnDirId,
+		testAccCvAzConnSubId,
+		testAccCvAzConnAppId,
 		authKey,
-		testAccAzConnResType,
-		testAccAzConnResName2,
+		testAccCvAzConnResType,
+		testAccCvAzConnResName2,
 		conn2name,
-		testAccAzConnDirId,
+		testAccCvAzConnDirId,
 		conn2subId,
-		testAccAzConnAppId,
+		testAccCvAzConnAppId,
 		authKey))
 }
