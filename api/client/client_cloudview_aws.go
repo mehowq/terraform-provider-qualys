@@ -10,7 +10,7 @@ const apiCloudViewAWSPath = "/aws/connectors"
 
 // GetCloudViewAWSConnector gets an AWS Connector details with a specific Connector ID from the server
 func (c *Client) GetCloudViewAWSConnector(id string) (*CloudViewAWSConnector, error) {
-	body, err := c.httpRequest(fmt.Sprintf("%s/%s", apiCloudViewAWSPath, id), "GET", bytes.Buffer{})
+	body, err := c.httpRequestCloudView(fmt.Sprintf("%s/%s", apiCloudViewAWSPath, id), "GET", bytes.Buffer{})
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func (c *Client) NewCloudViewAWSConnector(connector *CloudViewAWSConnector) (*Cl
 	if err != nil {
 		return nil, err
 	}
-	body, err := c.httpRequest(apiCloudViewAWSPath, "POST", buf)
+	body, err := c.httpRequestCloudView(apiCloudViewAWSPath, "POST", buf)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *Client) UpdateCloudViewAWSConnector(connector *CloudViewAWSConnector) e
 	if err != nil {
 		return err
 	}
-	_, err = c.httpRequest(fmt.Sprintf("%s/%s", apiCloudViewAWSPath, connector.ConnectorId), "PUT", buf)
+	_, err = c.httpRequestCloudView(fmt.Sprintf("%s/%s", apiCloudViewAWSPath, connector.ConnectorId), "PUT", buf)
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func (c *Client) DeleteCloudViewAWSConnector(connectorId string) error {
 	body := fmt.Sprintf("[\"%s\"]", connectorId)
 	buf := bytes.Buffer{}
 	buf.WriteString(body)
-	_, err := c.httpRequest(apiCloudViewAWSPath, "DELETE", buf)
+	_, err := c.httpRequestCloudView(apiCloudViewAWSPath, "DELETE", buf)
 	if err != nil {
 		return err
 	}

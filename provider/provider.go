@@ -9,20 +9,15 @@ import (
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"platform": {
+			"cloudview_api": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("QUALYS_API_PLATFORM", ""),
+				DefaultFunc: schema.EnvDefaultFunc("QUALYS_CLOUDVIEW_API", ""),
 			},
-			"api": {
+			"assetview_api": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("QUALYS_API", ""),
-			},
-			"port": {
-				Type:        schema.TypeInt,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("QUALYS_API_PORT", ""),
+				DefaultFunc: schema.EnvDefaultFunc("QUALYS_ASSETVIEW_API", ""),
 			},
 			"username": {
 				Type:        schema.TypeString,
@@ -40,24 +35,25 @@ func Provider() terraform.ResourceProvider {
 			"qualys_cloudview_azure_connector": dataSourceCloudViewAzureConnector(),
 			"qualys_cloudview_aws_connector":   dataSourceCloudViewAWSConnector(),
 			"qualys_assetview_azure_connector": dataSourceAssetViewAzureConnector(),
-			"qualys_assetview_aws_connector":   dataSourceAssetViewAWSConnector(),
+			// TODO
+			// "qualys_assetview_aws_connector":   dataSourceAssetViewAWSConnector(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			//Terraform gets confused and downloads azure provider if we name it simply azure_connector
 			"qualys_cloudview_azure_connector": resourceCloudViewAzureConnector(),
 			"qualys_cloudview_aws_connector":   resourceCloudViewAWSConnector(),
 			"qualys_assetview_azure_connector": resourceAssetViewAzureConnector(),
-			"qualys_assetview_aws_connector":   resourceAssetViewAWSConnector(),
+			// TODO
+			// "qualys_assetview_aws_connector":   resourceAssetViewAWSConnector(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	platform := d.Get("platform").(string)
-	api := d.Get("api").(string)
-	port := d.Get("port").(int)
+	cloudview_api := d.Get("cloudview_api").(string)
+	assetview_api := d.Get("assetview_api").(string)
 	username := d.Get("username").(string)
 	password := d.Get("password").(string)
-	return client.NewClient(platform, port, api, username, password), nil
+	return client.NewClient(cloudview_api, assetview_api, username, password), nil
 }

@@ -25,11 +25,11 @@ func TestProvider(t *testing.T) {
 }
 
 func testAccPreCheck(t *testing.T) {
-	if v := os.Getenv("QUALYS_API_PLATFORM"); v == "" {
-		t.Fatal("QUALYS_API_PLATFORM environment variable must be set for acceptance tests")
+	if v := os.Getenv("QUALYS_CLOUDVIEW_API"); v == "" {
+		t.Fatal("QUALYS_CLOUDVIEW_API environment variable must be set for acceptance tests")
 	}
-	if v := os.Getenv("QUALYS_API"); v == "" {
-		t.Fatal("QUALYS_API environment variable must be set for acceptance tests")
+	if v := os.Getenv("QUALYS_ASSETVIEW_API"); v == "" {
+		t.Fatal("QUALYS_ASSETVIEW_API environment variable must be set for acceptance tests")
 	}
 	if v := os.Getenv("QUALYS_API_PORT"); v == "" {
 		t.Fatal("QUALYS_API_PORT environment variable must be set for acceptance tests")

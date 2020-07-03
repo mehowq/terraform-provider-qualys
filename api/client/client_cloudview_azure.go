@@ -10,7 +10,7 @@ const apiCloudViewAzurePath = "/azure/connectors"
 
 // GetCloudViewAzureConnector gets an Azure Connector details with a specific Connector ID from the server
 func (c *Client) GetCloudViewAzureConnector(id string) (*CloudViewAzureConnector, error) {
-	body, err := c.httpRequest(fmt.Sprintf("%s/%s", apiCloudViewAzurePath, id), "GET", bytes.Buffer{})
+	body, err := c.httpRequestCloudView(fmt.Sprintf("%s/%s", apiCloudViewAzurePath, id), "GET", bytes.Buffer{})
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func (c *Client) GetCloudViewAzureConnector(id string) (*CloudViewAzureConnector
 
 // GetAllCloudViewAzureConnectors gets Azure Connector details of all connectors currently configured
 func (c *Client) GetAllCloudViewAzureConnectors(pageNo int, pageSize int) (*[]CloudViewAzureConnector, error) {
-	body, err := c.httpRequest(fmt.Sprintf("%s?pageNo=%d&pageSize=%d", apiCloudViewAzurePath, pageNo, pageSize), "GET", bytes.Buffer{})
+	body, err := c.httpRequestCloudView(fmt.Sprintf("%s?pageNo=%d&pageSize=%d", apiCloudViewAzurePath, pageNo, pageSize), "GET", bytes.Buffer{})
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (c *Client) NewCloudViewAzureConnector(connector *CloudViewAzureConnector) 
 	if err != nil {
 		return nil, err
 	}
-	body, err := c.httpRequest(apiCloudViewAzurePath, "POST", buf)
+	body, err := c.httpRequestCloudView(apiCloudViewAzurePath, "POST", buf)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (c *Client) UpdateCloudViewAzureConnector(connector *CloudViewAzureConnecto
 	if err != nil {
 		return err
 	}
-	_, err = c.httpRequest(fmt.Sprintf("%s/%s", apiCloudViewAzurePath, connector.ConnectorId), "PUT", buf)
+	_, err = c.httpRequestCloudView(fmt.Sprintf("%s/%s", apiCloudViewAzurePath, connector.ConnectorId), "PUT", buf)
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (c *Client) DeleteCloudViewAzureConnector(connectorId string) error {
 	body := fmt.Sprintf("[\"%s\"]", connectorId)
 	buf := bytes.Buffer{}
 	buf.WriteString(body)
-	_, err := c.httpRequest(apiCloudViewAzurePath, "DELETE", buf)
+	_, err := c.httpRequestCloudView(apiCloudViewAzurePath, "DELETE", buf)
 	if err != nil {
 		return err
 	}

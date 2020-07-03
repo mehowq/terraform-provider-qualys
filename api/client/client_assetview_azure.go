@@ -2,87 +2,107 @@ package client
 
 import (
 	"bytes"
-	"encoding/json"
+	"encoding/xml"
 	"fmt"
+	"log"
 )
 
-const apiAzurePath = "/azure/connectors"
+// GetAssetViewAzureConnector gets an AssetView Azure Connector details with a specific Connector ID from the server
+func (c *Client) GetAssetViewAzureConnector(id int) (*AssetViewAzureConnector, error) {
+	svcResp, err := c.httpRequestAssetView(fmt.Sprintf("/get/am/azureassetdataconnector/%d", id), "GET", bytes.Buffer{})
+	if err != nil {
+		return nil, err
+	}
 
-// GetAssetViewAzureConnector gets an Azure Connector details with a specific Connector ID from the server
-func (c *Client) GetAssetViewAzureConnector(id string) (*AssetViewAzureConnector, error) {
-	body, err := c.httpRequest(fmt.Sprintf("%s/%s", apiAzurePath, id), "GET", bytes.Buffer{})
-	if err != nil {
-		return nil, err
+	var connector *AssetViewAzureConnector
+	if svcResp.Count == 1 {
+		connector = &svcResp.AssetViewData.AssetViewAzureConnectors[0]
 	}
-	connector := &AssetViewAzureConnector{}
-	err = json.NewDecoder(body).Decode(connector)
-	if err != nil {
-		return nil, err
-	}
+
 	return connector, nil
 }
 
-// GetAllAssetViewAzureConnectors gets Azure Connector details of all connectors currently configured
-func (c *Client) GetAllAssetViewAzureConnectors(pageNo int, pageSize int) (*[]AssetViewAzureConnector, error) {
-	body, err := c.httpRequest(fmt.Sprintf("%s?pageNo=%d&pageSize=%d", apiAzurePath, pageNo, pageSize), "GET", bytes.Buffer{})
+// GetAllAssetViewAzureConnectors gets AssetView Azure Connector details of all connectors currently configured
+func (c *Client) GetAllAssetViewAzureConnectors() (*[]AssetViewAzureConnector, error) {
+	svcResp, err := c.httpRequestAssetView(fmt.Sprintf("/search/am/azureassetdataconnector"), "POST", bytes.Buffer{})
 	if err != nil {
 		return nil, err
 	}
 
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(body)
-
-	type ConnectorsContent struct {
-		Connectors []AssetViewAzureConnector `json:"content"`
-	}
-
-	var content ConnectorsContent
-	if err := json.Unmarshal(buf.Bytes(), &content); err != nil {
-		return nil, err
-	}
-
-	return &content.Connectors, nil
+	return &svcResp.AssetViewData.AssetViewAzureConnectors, nil
 }
 
-// NewAssetViewAzureConnector creates new Azure Connector
-func (c *Client) NewAssetViewAzureConnector(connector *AssetViewAzureConnector) (*AssetViewAzureConnector, error) {
+// SearchAssetViewAzureConnectors searches for AssetView Azure Connectors by given criteria
+func (c *Client) SearchAssetViewAzureConnectors(criteria []AssetViewFiltersCriteria) (*[]AssetViewAzureConnector, error) {
+	svcReq := new(AssetViewServiceRequest)
+	filters := AssetViewFilters{
+		Criteria: criteria,
+	}
+	svcReq.Filters = &filters
 	buf := bytes.Buffer{}
-	err := json.NewEncoder(&buf).Encode(connector)
+	err := xml.NewEncoder(&buf).Encode(svcReq)
+	//log.Print(string(buf.Bytes()))
 	if err != nil {
 		return nil, err
 	}
-	body, err := c.httpRequest(apiAzurePath, "POST", buf)
+
+	svcResp, err := c.httpRequestAssetView(fmt.Sprintf("/search/am/azureassetdataconnector"), "POST", buf)
 	if err != nil {
 		return nil, err
 	}
-	newConnector := &AssetViewAzureConnector{}
-	err = json.NewDecoder(body).Decode(newConnector)
+	return &svcResp.AssetViewData.AssetViewAzureConnectors, nil
+}
+
+// NewAssetViewAzureConnector creates a new AssetView Azure Connector
+func (c *Client) NewAssetViewAzureConnector(connector *AssetViewAzureConnector) (*AssetViewAzureConnector, error) {
+	svcReq := new(AssetViewServiceRequest)
+	svcReq.AssetViewData.AssetViewAzureConnectors = []AssetViewAzureConnector{*connector}
+	buf := bytes.Buffer{}
+	err := xml.NewEncoder(&buf).Encode(svcReq)
 	if err != nil {
 		return nil, err
+	}
+
+	svcResp, err := c.httpRequestAssetView("/create/am/azureassetdataconnector", "POST", buf)
+	if err != nil {
+		return nil, err
+	}
+
+	var newConnector *AssetViewAzureConnector
+	if svcResp.Count == 1 {
+		newConnector = &svcResp.AssetViewData.AssetViewAzureConnectors[0]
 	}
 	return newConnector, nil
 }
 
-// UpdateAssetViewAzureConnector updates details of the given Azure Connector
-func (c *Client) UpdateAssetViewAzureConnector(connector *AssetViewAzureConnector) error {
+// UpdateAssetViewAzureConnector updates details of the given AssetView Azure Connector
+func (c *Client) UpdateAssetViewAzureConnector(connector *AssetViewAzureConnector) (*AssetViewAzureConnector, error) {
+	svcReq := new(AssetViewServiceRequest)
+	svcReq.AssetViewData.AssetViewAzureConnectors = []AssetViewAzureConnector{*connector}
 	buf := bytes.Buffer{}
-	err := json.NewEncoder(&buf).Encode(connector)
+	err := xml.NewEncoder(&buf).Encode(svcReq)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	_, err = c.httpRequest(fmt.Sprintf("%s/%s", apiAzurePath, connector.ConnectorId), "PUT", buf)
+
+	log.Println(string(buf.Bytes()))
+	svcResp, err := c.httpRequestAssetView(fmt.Sprintf("/update/am/azureassetdataconnector/%d", *connector.ConnectorId), "POST", buf)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+
+	var updatedConnector *AssetViewAzureConnector
+	if svcResp.Count == 1 {
+		updatedConnector = &svcResp.AssetViewData.AssetViewAzureConnectors[0]
+	}
+
+	return updatedConnector, nil
 }
 
-// DeleteAssetViewAzureConnector removes AssetViewAzureConnector from the server
-func (c *Client) DeleteAssetViewAzureConnector(connectorId string) error {
-	body := fmt.Sprintf("[\"%s\"]", connectorId)
+// DeleteAssetViewAzureConnector removes AssetView Azure Connector from the server
+func (c *Client) DeleteAssetViewAzureConnector(connectorId int) error {
 	buf := bytes.Buffer{}
-	buf.WriteString(body)
-	_, err := c.httpRequest(apiAzurePath, "DELETE", buf)
+	_, err := c.httpRequestAssetView(fmt.Sprintf("/delete/am/azureassetdataconnector/%d", connectorId), "POST", buf)
 	if err != nil {
 		return err
 	}

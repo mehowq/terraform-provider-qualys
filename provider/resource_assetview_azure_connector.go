@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -19,9 +20,18 @@ func resourceAssetViewAzureConnector() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"default_tags": &schema.Schema{
+				Type:     schema.TypeMap,
+				Required: true,
+			},
+			"disabled": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
 			"directory_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"subscription_id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -31,11 +41,13 @@ func resourceAssetViewAzureConnector() *schema.Resource {
 			"application_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"authentication_key": &schema.Schema{
 				Type:      schema.TypeString,
 				Required:  true,
 				Sensitive: true,
+				ForceNew:  true,
 			},
 			"is_gov_cloud": &schema.Schema{
 				Type:     schema.TypeBool,
@@ -50,6 +62,10 @@ func resourceAssetViewAzureConnector() *schema.Resource {
 				Computed: true,
 			},
 			"state": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"type": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -68,84 +84,179 @@ func resourceAssetViewAzureConnector() *schema.Resource {
 func resourceAssetViewAzureConnectorCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	connector := client.AssetViewAzureConnector{
-		Name:              d.Get("name").(string),
-		Description:       d.Get("description").(string),
-		DirectoryId:       d.Get("directory_id").(string),
-		SubscriptionId:    d.Get("subscription_id").(string),
-		ApplicationId:     d.Get("application_id").(string),
-		AuthenticationKey: d.Get("authentication_key").(string),
-		IsGovCloud:        d.Get("is_gov_cloud").(bool),
+	dirId := d.Get("directory_id").(string)
+	subId := d.Get("subscription_id").(string)
+	appId := d.Get("application_id").(string)
+	authKey := d.Get("authentication_key").(string)
+	authRec := client.AssetViewDataAuthRecord{
+		DirectoryId:       &dirId,
+		SubscriptionId:    &subId,
+		ApplicationId:     &appId,
+		AuthenticationKey: &authKey,
 	}
 
-	newConnector, err := apiClient.NewAssetViewAzureConnector(&connector)
-
+	defTags, err := setDefaultTags(d)
 	if err != nil {
 		return err
 	}
-	d.SetId(newConnector.ConnectorId)
+
+	var newName *string
+	if d.HasChange("name") {
+		name := d.Get("name").(string)
+		newName = &name
+	}
+
+	connector := client.AssetViewAzureConnector{
+		Name:        newName,
+		Description: d.Get("description").(string),
+		AuthRecord:  authRec,
+		IsGovCloud:  d.Get("is_gov_cloud").(bool),
+		DefaultTags: defTags,
+	}
+
+	newConnector, err := apiClient.NewAssetViewAzureConnector(&connector)
+	if err != nil {
+		return err
+	}
+
+	d.SetId(strconv.Itoa(*newConnector.ConnectorId))
 	d.Set("last_synced_on", newConnector.LastSyncedOn)
 	d.Set("total_assets", newConnector.TotalAssets)
 	d.Set("state", newConnector.State)
+
 	return resourceAssetViewAzureConnectorRead(d, m)
 }
 
 func resourceAssetViewAzureConnectorRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	connectorId := d.Id()
-	connector, err := apiClient.GetAssetViewAzureConnector(connectorId)
+	var connIdInt, err = strconv.Atoi(d.Id())
+	if err != nil {
+		return err
+	}
+	connector, err := apiClient.GetAssetViewAzureConnector(connIdInt)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
 			d.SetId("")
 		} else {
-			return fmt.Errorf("error finding Connector with ID %s", connectorId)
+			return fmt.Errorf("error finding Connector with ID %s", d.Id())
 		}
 	}
 
-	d.SetId(connector.ConnectorId)
+	d.SetId(strconv.Itoa(*connector.ConnectorId))
 	d.Set("name", connector.Name)
 	d.Set("description", connector.Description)
-	d.Set("directory_id", connector.DirectoryId)
-	d.Set("subscription_id", connector.SubscriptionId)
-	d.Set("application_id", connector.ApplicationId)
-	//The API doesn't return the auth key (security)
-	//d.Set("authentication_key", connector.AuthenticationKey)
 	d.Set("is_gov_cloud", connector.IsGovCloud)
 	d.Set("last_synced_on", connector.LastSyncedOn)
 	d.Set("total_assets", connector.TotalAssets)
 	d.Set("state", connector.State)
+	d.Set("type", connector.Type)
+
+	// The API is very inconsistent - when you make a Get request the AuthRecord is SOMETIMES not returned!
+	// make a few more exactly the same calls and you will get the AuthRecord no problemo!
+	// Therefore we're setting up the authRecord only if it comes back in the response
+	// The API is very inconsistent - when you make a Get request the AuthRecord is SOMETIMES not returned!
+	// make a few more exactly the same calls and you will get the AuthRecord no problemo!
+	// Therefore we're setting up the authRecord only if it comes back in the response
+	if connector.AuthRecord.DirectoryId != nil {
+		d.Set("directory_id", *connector.AuthRecord.DirectoryId)
+	}
+	if connector.AuthRecord.SubscriptionId != nil {
+		d.Set("subscription_id", *connector.AuthRecord.SubscriptionId)
+	}
+	if connector.AuthRecord.ApplicationId != nil {
+		d.Set("application_id", *connector.AuthRecord.ApplicationId)
+	}
+	//The API doesn't return the auth key (security)
+
+	tagsMap := make(map[string]string)
+	if (connector.DefaultTags != nil) && (connector.DefaultTags.TagsList != nil) {
+		tagsMap = convertToTagsMap(connector.DefaultTags.TagsList.TagSimple)
+	}
+	d.Set("default_tags", tagsMap)
+
 	return nil
 }
 
 func resourceAssetViewAzureConnectorUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	connector := client.AssetViewAzureConnector{
-		ConnectorId:    d.Id(),
-		Name:           d.Get("name").(string),
-		Description:    d.Get("description").(string),
-		DirectoryId:    d.Get("directory_id").(string),
-		SubscriptionId: d.Get("subscription_id").(string),
-		ApplicationId:  d.Get("application_id").(string),
-		//Since Read returns an empty auth key, TF thinks it needs to update it
-		AuthenticationKey: d.Get("authentication_key").(string),
-		IsGovCloud:        d.Get("is_gov_cloud").(bool),
+	// Due to the way the API works, if the name stays the same, we can't pass it
+	var newName *string
+	if d.HasChange("name") {
+		name := d.Get("name").(string)
+		newName = &name
 	}
 
-	err := apiClient.UpdateAssetViewAzureConnector(&connector)
+	var ctrIdInt, err = strconv.Atoi(d.Id())
 	if err != nil {
 		return err
 	}
-	return nil
+
+	defTags, err := setDefaultTags(d)
+	if err != nil {
+		return err
+	}
+	connector := client.AssetViewAzureConnector{
+		ConnectorId: &ctrIdInt,
+		Name:        newName,
+		Description: d.Get("description").(string),
+		IsGovCloud:  d.Get("is_gov_cloud").(bool),
+		DefaultTags: defTags,
+	}
+
+	_, err = apiClient.UpdateAssetViewAzureConnector(&connector)
+	if err != nil {
+		return err
+	}
+
+	// Returning Read as for example when updating tags, the API doesn't return the tag names
+	return resourceAssetViewAzureConnectorRead(d, m)
+}
+
+func setDefaultTags(d *schema.ResourceData) (*client.AssetViewDataDefaultTags, error) {
+	avDefTags := client.AssetViewDataDefaultTags{}
+	if d.Get("default_tags") != nil {
+		defTags := d.Get("default_tags").(map[string]interface{})
+		tagsSimple := make([]client.AssetViewDataTagSimple, len(defTags))
+		var i = 0
+		for k := range defTags {
+			var tagIdInt, err = strconv.Atoi(k)
+			if err != nil {
+				return nil, err
+			}
+			tagsSimple[i].Id = tagIdInt
+			//The API only allows to set tag Id :(
+			i++
+		}
+		tagsSet := client.AssetViewDataTagsSet{}
+		tagsSet.TagSimple = tagsSimple
+		avDefTags.TagsSet = &tagsSet
+	}
+	return &avDefTags, nil
+}
+
+func convertToTagsMap(tags []client.AssetViewDataTagSimple) map[string]string {
+	tagsMap := make(map[string]string)
+	for i := 0; i < len(tags); i++ {
+		tagName := ""
+		if &tags[i] != nil {
+			tagName = *tags[i].Name
+		}
+		tagsMap[strconv.Itoa(tags[i].Id)] = tagName
+	}
+	return tagsMap
 }
 
 func resourceAssetViewAzureConnectorDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	connectorId := d.Id()
+	var ctrIdInt, err = strconv.Atoi(d.Id())
+	if err != nil {
+		return err
+	}
 
-	err := apiClient.DeleteAssetViewAzureConnector(connectorId)
+	err = apiClient.DeleteAssetViewAzureConnector(ctrIdInt)
 	if err != nil {
 		return err
 	}
@@ -156,8 +267,9 @@ func resourceAssetViewAzureConnectorDelete(d *schema.ResourceData, m interface{}
 func resourceAssetViewAzureConnectorExists(d *schema.ResourceData, m interface{}) (bool, error) {
 	apiClient := m.(*client.Client)
 
-	connectorId := d.Id()
-	_, err := apiClient.GetAssetViewAzureConnector(connectorId)
+	var ctrIdInt, err = strconv.Atoi(d.Id())
+
+	_, err = apiClient.GetAssetViewAzureConnector(ctrIdInt)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
 			return false, nil
