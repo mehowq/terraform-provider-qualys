@@ -48,14 +48,14 @@ func TestAccCvAzConnector_Basic(t *testing.T) {
 	})
 }
 
-func TestAccAzConnector_Update(t *testing.T) {
+func TestAccCvAzConnector_Update(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckCvAzConnectorDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAzConnectorUpdatePre(),
+				Config: testAccCheckCvAzConnectorUpdatePre(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckCvAzConnectorExists(fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName)),
 					resource.TestCheckResourceAttr(
@@ -69,7 +69,7 @@ func TestAccAzConnector_Update(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccCheckAzConnectorUpdatePost(),
+				Config: testAccCheckCvAzConnectorUpdatePost(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckCvAzConnectorExists(fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName)),
 					resource.TestCheckResourceAttr(
@@ -86,14 +86,14 @@ func TestAccAzConnector_Update(t *testing.T) {
 	})
 }
 
-func TestAccAzConnector_Multiple(t *testing.T) {
+func TestAccCvAzConnector_Multiple(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckCvAzConnectorDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAzConnectorMultiple(),
+				Config: testAccCheckCvAzConnectorMultiple(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckCvAzConnectorExists(fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName)),
 					testAccCheckCvAzConnectorExists(fmt.Sprintf("%s.%s", testAccCvAzConnResType, testAccCvAzConnResName2)),
@@ -168,7 +168,7 @@ func testAccCheckCvAzConnectorDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAzConnectorUpdatePre() string {
+func testAccCheckCvAzConnectorUpdatePre() string {
 	authKey := guuid.New().String()
 
 	return (fmt.Sprintf(`
@@ -191,7 +191,7 @@ resource "%s" "%s" {
 		authKey))
 }
 
-func testAccCheckAzConnectorUpdatePost() string {
+func testAccCheckCvAzConnectorUpdatePost() string {
 	authKey := guuid.New().String()
 
 	return (fmt.Sprintf(`
@@ -214,7 +214,7 @@ resource "%s" "%s" {
 		authKey))
 }
 
-func testAccCheckAzConnectorMultiple() string {
+func testAccCheckCvAzConnectorMultiple() string {
 	authKey := guuid.New().String()
 	conn2name := fmt.Sprintf("TF_AccTest_AzConn2_%s", guuid.New().String())
 	conn2subId := guuid.New().String()
