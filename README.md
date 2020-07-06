@@ -115,7 +115,6 @@ data "qualys_cloudview_azure_connector" "ds_azav_by_subid_example" {
      subscription_id = "<Subscription ID>"
 }
 ```
-Please note, when configuring existing tags on a connector, you can pass just integer tag key with an empty string tag value. The API will retrieve the tag name.
 
 ## Attributes Reference
 The following attributes are exported.
