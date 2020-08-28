@@ -214,26 +214,37 @@ func resourceAssetViewAzureConnectorUpdate(d *schema.ResourceData, m interface{}
 	return resourceAssetViewAzureConnectorRead(d, m)
 }
 
-func setDefaultTags(d *schema.ResourceData) (*client.AssetViewDataDefaultTags, error) {
-	avDefTags := client.AssetViewDataDefaultTags{}
+func setDefaultTags(d *schema.ResourceData) (*client.AssetViewDataTagsChildren, error) {
+	var avDefTags *client.AssetViewDataTagsChildren
 	if d.Get("default_tags") != nil {
 		defTags := d.Get("default_tags").(map[string]interface{})
-		tagsSimple := make([]client.AssetViewDataTagSimple, len(defTags))
-		var i = 0
-		for k := range defTags {
-			var tagIdInt, err = strconv.Atoi(k)
-			if err != nil {
-				return nil, err
-			}
-			tagsSimple[i].Id = tagIdInt
-			//The API only allows to set tag Id :(
-			i++
+
+		var err error
+		avDefTags, err = readChildrenTags(defTags)
+		if err != nil {
+			return nil, err
 		}
-		tagsSet := client.AssetViewDataTagsSet{}
-		tagsSet.TagSimple = tagsSimple
-		avDefTags.TagsSet = &tagsSet
 	}
-	return &avDefTags, nil
+	return avDefTags, nil
+}
+
+func readChildrenTags(childTags map[string]interface{}) (*client.AssetViewDataTagsChildren, error) {
+	avChildren := client.AssetViewDataTagsChildren{}
+	tagsSimple := make([]client.AssetViewDataTagSimple, len(childTags))
+	var i = 0
+	for k := range childTags {
+		var tagIdInt, err = strconv.Atoi(k)
+		if err != nil {
+			return nil, err
+		}
+		tagsSimple[i].Id = &tagIdInt
+		//The API only allows to set tag Id :(
+		i++
+	}
+	tagsSet := client.AssetViewDataTagsSet{}
+	tagsSet.TagSimple = tagsSimple
+	avChildren.TagsSet = &tagsSet
+	return &avChildren, nil
 }
 
 func convertToTagsMap(tags []client.AssetViewDataTagSimple) map[string]string {
@@ -243,7 +254,7 @@ func convertToTagsMap(tags []client.AssetViewDataTagSimple) map[string]string {
 		if &tags[i] != nil {
 			tagName = *tags[i].Name
 		}
-		tagsMap[strconv.Itoa(tags[i].Id)] = tagName
+		tagsMap[strconv.Itoa(*tags[i].Id)] = tagName
 	}
 	return tagsMap
 }

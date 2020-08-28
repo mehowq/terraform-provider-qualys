@@ -32,23 +32,24 @@ type AssetViewResponseErrorDetails struct {
 type AssetViewData struct {
 	XMLName                  xml.Name                  `xml:"data"`
 	AssetViewAzureConnectors []AssetViewAzureConnector `xml:"AzureAssetDataConnector"`
+	AssetViewTags            []AssetViewDataTag        `xml:"Tag"`
 }
 type AssetViewAzureConnector struct {
-	XMLName      xml.Name                  `xml:"AzureAssetDataConnector"`
-	ConnectorId  *int                      `xml:"id"`
-	Name         *string                   `xml:"name"`
-	Description  string                    `xml:"description"`
-	DefaultTags  *AssetViewDataDefaultTags `xml:"defaultTags"`
-	IsGovCloud   bool                      `xml:"isGovCloudConfigured"`
-	AuthRecord   AssetViewDataAuthRecord   `xml:"authRecord"`
-	LastSyncedOn *string                   `xml:"lastSync"`
-	TotalAssets  *int                      `xml:"totalAssets"`
-	State        *string                   `xml:"connectorState"`
-	Type         *string                   `xml:"type"`
-	Disabled     bool                      `xml:"disabled"`
+	XMLName      xml.Name                   `xml:"AzureAssetDataConnector"`
+	ConnectorId  *int                       `xml:"id"`
+	Name         *string                    `xml:"name"`
+	Description  string                     `xml:"description"`
+	DefaultTags  *AssetViewDataTagsChildren `xml:"defaultTags"`
+	IsGovCloud   bool                       `xml:"isGovCloudConfigured"`
+	AuthRecord   AssetViewDataAuthRecord    `xml:"authRecord"`
+	LastSyncedOn *string                    `xml:"lastSync"`
+	TotalAssets  *int                       `xml:"totalAssets"`
+	State        *string                    `xml:"connectorState"`
+	Type         *string                    `xml:"type"`
+	Disabled     bool                       `xml:"disabled"`
 }
-type AssetViewDataDefaultTags struct {
-	XMLName  xml.Name               `xml:"defaultTags"`
+type AssetViewDataTagsChildren struct {
+	XMLName  xml.Name               `xml:"children"`
 	TagsSet  *AssetViewDataTagsSet  `xml:"set"`
 	TagsList *AssetViewDataTagsList `xml:"list"`
 }
@@ -62,7 +63,7 @@ type AssetViewDataTagsList struct {
 }
 type AssetViewDataTagSimple struct {
 	XMLName xml.Name `xml:"TagSimple"`
-	Id      int      `xml:"id"`
+	Id      *int     `xml:"id"`
 	Name    *string  `xml:"name"`
 }
 type AssetViewDataAuthRecord struct {
@@ -88,4 +89,16 @@ type AssetViewAWSConnector struct {
 	State             string `xml:"connectorState"`
 	Type              string `xml:"type"`
 	Disabled          string `xml:"disabled"`
+}
+
+type AssetViewDataTag struct {
+	XMLName  xml.Name                   `xml:"Tag"`
+	TagId    *int                       `xml:"id"`
+	Name     *string                    `xml:"name"`
+	RuleType *string                    `xml:"ruleType"`
+	RuleText *string                    `xml:"ruleText"`
+	Created  *string                    `xml:"created"`
+	Modified *string                    `xml:"modified"`
+	Color    *string                    `xml:"color"`
+	Children *AssetViewDataTagsChildren `xml:"children"`
 }

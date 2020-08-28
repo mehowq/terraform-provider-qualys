@@ -43,6 +43,7 @@ func Provider() terraform.ResourceProvider {
 			"qualys_cloudview_azure_connector": resourceCloudViewAzureConnector(),
 			"qualys_cloudview_aws_connector":   resourceCloudViewAWSConnector(),
 			"qualys_assetview_azure_connector": resourceAssetViewAzureConnector(),
+			"qualys_assetview_tag":             resourceAssetViewTag(),
 			// TODO
 			// "qualys_assetview_aws_connector":   resourceAssetViewAWSConnector(),
 		},
