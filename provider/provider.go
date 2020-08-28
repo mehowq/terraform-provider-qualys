@@ -35,8 +35,9 @@ func Provider() terraform.ResourceProvider {
 			"qualys_cloudview_azure_connector": dataSourceCloudViewAzureConnector(),
 			"qualys_cloudview_aws_connector":   dataSourceCloudViewAWSConnector(),
 			"qualys_assetview_azure_connector": dataSourceAssetViewAzureConnector(),
-			// TODO
+			"qualys_assetview_tag":             dataSourceAssetViewTag(),
 			// "qualys_assetview_aws_connector":   dataSourceAssetViewAWSConnector(),
+			// TODO
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			//Terraform gets confused and downloads azure provider if we name it simply azure_connector

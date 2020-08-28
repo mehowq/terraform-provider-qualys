@@ -32,26 +32,26 @@ func (c *Client) GetAssetViewDataTag(id int) (*AssetViewDataTag, error) {
 // 	return &svcResp.AssetViewData.AssetViewAzureConnectors, nil
 // }
 
-// // SearchAssetViewAzureConnectors searches for AssetView Azure Connectors by given criteria
-// func (c *Client) SearchAssetViewAzureConnectors(criteria []AssetViewFiltersCriteria) (*[]AssetViewAzureConnector, error) {
-// 	svcReq := new(AssetViewServiceRequest)
-// 	filters := AssetViewFilters{
-// 		Criteria: criteria,
-// 	}
-// 	svcReq.Filters = &filters
-// 	buf := bytes.Buffer{}
-// 	err := xml.NewEncoder(&buf).Encode(svcReq)
-// 	//log.Print(string(buf.Bytes()))
-// 	if err != nil {
-// 		return nil, err
-// 	}
+// SearchAssetViewTags searches for AssetView Tags by given criteria
+func (c *Client) SearchAssetViewTag(criteria []AssetViewFiltersCriteria) (*[]AssetViewDataTag, error) {
+	svcReq := new(AssetViewServiceRequest)
+	filters := AssetViewFilters{
+		Criteria: criteria,
+	}
+	svcReq.Filters = &filters
+	buf := bytes.Buffer{}
+	err := xml.NewEncoder(&buf).Encode(svcReq)
+	//log.Println(string(buf.Bytes()))
+	if err != nil {
+		return nil, err
+	}
 
-// 	svcResp, err := c.httpRequestAssetView(fmt.Sprintf("/search/am/azureassetdataconnector"), "POST", buf)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return &svcResp.AssetViewData.AssetViewAzureConnectors, nil
-// }
+	svcResp, err := c.httpRequestAssetView(fmt.Sprintf("/search/am/tag"), "POST", buf)
+	if err != nil {
+		return nil, err
+	}
+	return &svcResp.AssetViewData.AssetViewTags, nil
+}
 
 // NewAssetViewTag creates a new AssetView Tag
 func (c *Client) NewAssetViewDataTag(tag *AssetViewDataTag) (*AssetViewDataTag, error) {
