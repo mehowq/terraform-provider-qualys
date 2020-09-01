@@ -74,7 +74,7 @@ func dataSourceAssetViewTagRead(d *schema.ResourceData, m interface{}) error {
 			if (len(*tags)) == 1 {
 				tag = &(*tags)[0]
 			} else {
-				return fmt.Errorf("AssetView Tag with id %s doesn't exist", name)
+				return fmt.Errorf("AssetView Tag with name %s doesn't exist", name)
 			}
 		}
 	} else {
