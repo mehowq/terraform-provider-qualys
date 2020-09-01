@@ -95,6 +95,8 @@ func (c *Client) httpRequestAssetView(path, method string, body bytes.Buffer) (*
 		http.StatusOK:
 		buf := new(bytes.Buffer)
 		_, err := buf.ReadFrom(resp.Body)
+		//log.Print(string(buf.Bytes()))
+
 		if err != nil {
 			return nil, err
 		}

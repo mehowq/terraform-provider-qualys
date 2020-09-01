@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"log"
 )
 
 // GetAssetViewTag gets AssetView Tag details
@@ -62,8 +61,7 @@ func (c *Client) NewAssetViewDataTag(tag *AssetViewDataTag) (*AssetViewDataTag, 
 	if err != nil {
 		return nil, err
 	}
-	log.Print("MKTEST111")
-	log.Print(string(buf.Bytes()))
+	//log.Print(string(buf.Bytes()))
 
 	svcResp, err := c.httpRequestAssetView("/create/am/tag", "POST", buf)
 	if err != nil {

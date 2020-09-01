@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"log"
 )
 
 // GetAssetViewAzureConnector gets an AssetView Azure Connector details with a specific Connector ID from the server
@@ -85,7 +84,7 @@ func (c *Client) UpdateAssetViewAzureConnector(connector *AssetViewAzureConnecto
 		return nil, err
 	}
 
-	log.Println(string(buf.Bytes()))
+	//log.Println(string(buf.Bytes()))
 	svcResp, err := c.httpRequestAssetView(fmt.Sprintf("/update/am/azureassetdataconnector/%d", *connector.ConnectorId), "POST", buf)
 	if err != nil {
 		return nil, err
