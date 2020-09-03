@@ -214,13 +214,13 @@ func resourceAssetViewAzureConnectorUpdate(d *schema.ResourceData, m interface{}
 	return resourceAssetViewAzureConnectorRead(d, m)
 }
 
-func setDefaultTags(d *schema.ResourceData) (*client.AssetViewDataTagsChildren, error) {
-	var avDefTags *client.AssetViewDataTagsChildren
+func setDefaultTags(d *schema.ResourceData) (*client.AssetViewDataTagsDefault, error) {
+	var avDefTags *client.AssetViewDataTagsDefault
 	if d.Get("default_tags") != nil {
 		defTags := d.Get("default_tags").(map[string]interface{})
 
 		var err error
-		avDefTags, err = readChildrenTags(defTags)
+		avDefTags, err = readDefaultTags(defTags)
 		if err != nil {
 			return nil, err
 		}
@@ -228,8 +228,8 @@ func setDefaultTags(d *schema.ResourceData) (*client.AssetViewDataTagsChildren, 
 	return avDefTags, nil
 }
 
-func readChildrenTags(childTags map[string]interface{}) (*client.AssetViewDataTagsChildren, error) {
-	avChildren := client.AssetViewDataTagsChildren{}
+func readDefaultTags(childTags map[string]interface{}) (*client.AssetViewDataTagsDefault, error) {
+	avChildren := client.AssetViewDataTagsDefault{}
 	tagsSimple := make([]client.AssetViewDataTagSimple, len(childTags))
 	var i = 0
 	for k := range childTags {

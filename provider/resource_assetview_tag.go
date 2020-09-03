@@ -107,6 +107,25 @@ func setChildrenTags(d *schema.ResourceData) (*client.AssetViewDataTagsChildren,
 	return avChildren, nil
 }
 
+func readChildrenTags(childTags map[string]interface{}) (*client.AssetViewDataTagsChildren, error) {
+	avChildren := client.AssetViewDataTagsChildren{}
+	tagsSimple := make([]client.AssetViewDataTagSimple, len(childTags))
+	var i = 0
+	for k := range childTags {
+		var tagIdInt, err = strconv.Atoi(k)
+		if err != nil {
+			return nil, err
+		}
+		tagsSimple[i].Id = &tagIdInt
+		//The API only allows to set tag Id :(
+		i++
+	}
+	tagsSet := client.AssetViewDataTagsSet{}
+	tagsSet.TagSimple = tagsSimple
+	avChildren.TagsSet = &tagsSet
+	return &avChildren, nil
+}
+
 func resourceAssetViewTagRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 

@@ -35,18 +35,23 @@ type AssetViewData struct {
 	AssetViewTags            []AssetViewDataTag        `xml:"Tag"`
 }
 type AssetViewAzureConnector struct {
-	XMLName      xml.Name                   `xml:"AzureAssetDataConnector"`
-	ConnectorId  *int                       `xml:"id"`
-	Name         *string                    `xml:"name"`
-	Description  string                     `xml:"description"`
-	DefaultTags  *AssetViewDataTagsChildren `xml:"defaultTags"`
-	IsGovCloud   bool                       `xml:"isGovCloudConfigured"`
-	AuthRecord   AssetViewDataAuthRecord    `xml:"authRecord"`
-	LastSyncedOn *string                    `xml:"lastSync"`
-	TotalAssets  *int                       `xml:"totalAssets"`
-	State        *string                    `xml:"connectorState"`
-	Type         *string                    `xml:"type"`
-	Disabled     bool                       `xml:"disabled"`
+	XMLName      xml.Name                  `xml:"AzureAssetDataConnector"`
+	ConnectorId  *int                      `xml:"id"`
+	Name         *string                   `xml:"name"`
+	Description  string                    `xml:"description"`
+	DefaultTags  *AssetViewDataTagsDefault `xml:"defaultTags"`
+	IsGovCloud   bool                      `xml:"isGovCloudConfigured"`
+	AuthRecord   AssetViewDataAuthRecord   `xml:"authRecord"`
+	LastSyncedOn *string                   `xml:"lastSync"`
+	TotalAssets  *int                      `xml:"totalAssets"`
+	State        *string                   `xml:"connectorState"`
+	Type         *string                   `xml:"type"`
+	Disabled     bool                      `xml:"disabled"`
+}
+type AssetViewDataTagsDefault struct {
+	XMLName  xml.Name               `xml:"children"`
+	TagsSet  *AssetViewDataTagsSet  `xml:"set"`
+	TagsList *AssetViewDataTagsList `xml:"list"`
 }
 type AssetViewDataTagsChildren struct {
 	XMLName  xml.Name               `xml:"children"`
